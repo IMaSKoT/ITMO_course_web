@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма добавления/редактирования</title>
+    <link rel="stylesheet" href="css/style_form.css">
+</head>
+<body>
+    <form>
+        <div>
+            <header>
+                <h2>Заполните поля для добавления/редактирования данных</h2>
+            </header>
+        </div>
+        <div>
+            <label for="surname">Фамилия</label>
+            <input type="text" id="surname" placeholder="Иванов" pattern='[А-яЁё-]{2,}' name="surname" required>
+        </div>
+        <div>
+            <label for="name">Имя</label>
+            <input type="text" id="name" placeholder="Иван" pattern='[А-яЁё-]{2,}' name="name" required>
+        </div>
+        <div>
+            <label for="patronymic">Отчество</label>
+            <input type="text" id="patronymic" placeholder="Иванович" pattern='[А-я]{2,}' name="patronymic">
+        </div>
+        <div>
+            <label for="group">Группа</label>
+            <input type="text" id="group" pattern="[A-Z][1-9][0-9][0-9][0-9]" placeholder="P3223" name="group"
+                   title="Формат: Латинская заглавная буква и 4 цифры, например R3124" required>
+        </div>
+        <div>
+            <label for="isuid">ИСУ</label>
+            <input type="text" id="isuid" pattern="[1-9][0-9][0-9][0-9][0-9][0-9]" placeholder="555555"
+                   title="6-ти значный код, начинающийся не с 0" name="isuid" required>
+        </div>
+        <div>
+            <label for="dorm">Номер общежития</label>
+            <input type="number" id="dorm" placeholder="3" name="dorm">
+        </div>
+        <div>
+            <label for="room">Номер комнаты</label>
+            <input type="number" id="room" placeholder="689" name="room">
+        </div>
+        <div>
+            <label for="date">Срок заселения</label>
+            <input type="date" id="date" name="date">
+        </div>
+        <div>
+            <label for="abroad">Иностранный гражданин</label>
+            <input type="checkbox" id="abroad" name="abroad">
+        </div>
+        <div>
+            <label for="notes">Заметки</label>
+            <textarea id="notes" rows="5" maxlength="1000" placeholder="Заметки" name="notes"></textarea>
+        </div>
+        <div>
+            <button type="submit">Отправить</button>
+        </div>
+    </form>
+    <script src="js/db.js"></script>
+
+</body>
+</html>
