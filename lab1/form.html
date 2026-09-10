@@ -7,23 +7,23 @@
     <link rel="stylesheet" href="css/style_form.css">
 </head>
 <body>
-    <form>
-        <div>
+    <div>
             <header>
                 <h2>Заполните поля для добавления/редактирования данных</h2>
             </header>
-        </div>
+    </div>
+    <form>
         <div>
             <label for="surname">Фамилия</label>
-            <input type="text" id="surname" placeholder="Иванов" pattern='[А-яЁё-]{2,}' name="surname" required>
+            <input type="text" id="surname" placeholder="Иванов" pattern='[А-яЁё\-]{2,}' name="surname" required>
         </div>
         <div>
             <label for="name">Имя</label>
-            <input type="text" id="name" placeholder="Иван" pattern='[А-яЁё-]{2,}' name="name" required>
+            <input type="text" id="name" placeholder="Иван" pattern='[А-яЁё\-]{2,}' name="name" required>
         </div>
         <div>
             <label for="patronymic">Отчество</label>
-            <input type="text" id="patronymic" placeholder="Иванович" pattern='[А-я]{2,}' name="patronymic">
+            <input type="text" id="patronymic" placeholder="Иванович" pattern='[А-яЁё]{2,}' name="patronymic">
         </div>
         <div>
             <label for="group">Группа</label>
@@ -31,25 +31,25 @@
                    title="Формат: Латинская заглавная буква и 4 цифры, например R3124" required>
         </div>
         <div>
-            <label for="isuid">ИСУ</label>
-            <input type="text" id="isuid" pattern="[1-9][0-9][0-9][0-9][0-9][0-9]" placeholder="555555"
-                   title="6-ти значный код, начинающийся не с 0" name="isuid" required>
+            <label for="isuId">ИСУ</label>
+            <input type="text" id="isuId" pattern="[1-9][0-9][0-9][0-9][0-9][0-9]" placeholder="555555"
+                   title="6-ти значный код, начинающийся не с 0" name="isuId" required>
         </div>
         <div>
-            <label for="dorm">Номер общежития</label>
-            <input type="number" id="dorm" placeholder="3" name="dorm">
+            <label for="dormitory">Номер общежития</label>
+            <input type="number" min="1" id="dormitory" placeholder="3" name="dormitory">
         </div>
         <div>
             <label for="room">Номер комнаты</label>
-            <input type="number" id="room" placeholder="689" name="room">
+            <input type="number" min="1" id="room" placeholder="689" name="room">
         </div>
         <div>
-            <label for="date">Срок заселения</label>
-            <input type="date" id="date" name="date">
+            <label for="settlementPeriod">Срок заселения</label>
+            <input type="date" min="2000-01-01" id="settlementPeriod" name="settlementPeriod">
         </div>
         <div>
-            <label for="abroad">Иностранный гражданин</label>
-            <input type="checkbox" id="abroad" name="abroad">
+            <label for="isForeign">Иностранный гражданин</label>
+            <input type="checkbox" id="isForeign" name="isForeign">
         </div>
         <div>
             <label for="notes">Заметки</label>
@@ -59,7 +59,9 @@
             <button type="submit">Отправить</button>
         </div>
     </form>
+    <div><a href="index.html">Вернуться к таблице</a></div>
     <script src="js/db.js"></script>
+    <script src="js/form.js"></script>
 
 </body>
 </html>
