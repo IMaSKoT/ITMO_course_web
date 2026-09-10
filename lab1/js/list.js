@@ -4,17 +4,27 @@ const students = [
         id: 1,
         fullName: "Пушкин Иван Алексеевич",
         group: "P3210",
-        isuId: 123456
+        isuId: 123456,
+        dormitory: 8,
+        room: 412,
+        settlementPeriod: "01.09.2026 — 30.06.2027",
+        isForeign: false,
+        notes: "Без особенностей"
     },
     {
         id: 2,
         fullName: "Иванов Петр Сергеевич",
         group: "P3211",
-        isuId: 654321
+        isuId: 654321,
+        dormitory: 10,
+        room: 205,
+        settlementPeriod: "01.09.2026 — 31.01.2027",
+        isForeign: true,
+        notes: "Требуется помощь с документами"
     }
 ];
 const tableBody = document.querySelector('#students-table-body')
-const fields = ["fullName", "group", "isuId"]
+const fields = ["fullName", "group", "isuId","dormitory", "room", "settlementPeriod", "isForeign", "notes"]
 // Функция добавления студентов в таблицу по списку студентов
 function renderStudents(students){
     tableBody.innerHTML = "";
@@ -29,12 +39,8 @@ function renderStudents(students){
         //Кнопка 'удалить'
         const deleteButton = document.createElement("button")
         deleteButton.textContent = "Удалить"
-
         const actionsCell = document.createElement("td")
-
         actionsCell.append(deleteButton)
-        row.append(actionsCell)
-
         //Назначем удаление кнопке
         deleteButton.addEventListener("click", function(){
             const index = students.findIndex(function(item){
@@ -43,6 +49,18 @@ function renderStudents(students){
             students.splice(index, 1)
             renderStudents(students)
         })
+        //Кнопка 'подробнее'
+        const detailsLink = document.createElement("a")
+        detailsLink.textContent = "Подробнее"
+        detailsLink.href = `student.html?id=${student.id}`
+        actionsCell.append(detailsLink)
+        //Кнопка 'изменить'
+        const changeLink = document.createElement("a")
+        changeLink.textContent = "Изменить"
+        changeLink.href = `form.html?id=${student.id}`
+        actionsCell.append(changeLink)
+
+        row.append(actionsCell)
         tableBody.append(row)
     })
 }
