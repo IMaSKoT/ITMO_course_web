@@ -19,17 +19,22 @@ function openDatabase() {
 const dbPromise = openDatabase()
 
 async function addStudent(data) {
-    const db = await dbPromise
+    const db = await dbPromise;
+
     const transaction = db.transaction('Students', 'readwrite');
     const store = transaction.objectStore('Students');
-    const addRequest = store.add(data);
-    addRequest.onsuccess = function () {
-    console.log('Студент добавлен');
-    };
-    addRequest.onerror = function () {
-    console.log(addRequest.error)
-    };
-};
+    const request = store.add(data);
+
+    return new Promise(function(resolve, reject) {
+        request.onsuccess = function() {
+            resolve();
+        };
+
+        request.onerror = function() {
+            reject(request.error);
+        };
+    });
+}
 async function getAllStudents () {
     const db = await dbPromise;
     const transaction = db.transaction('Students', 'readonly')
@@ -75,4 +80,21 @@ async function getStudent (id) {
         }
     })
 
+}
+async function updateStudent(student) {
+    const db = await dbPromise;
+
+    const transaction = db.transaction('Students', 'readwrite');
+    const store = transaction.objectStore('Students');
+    const request = store.put(student);
+
+    return new Promise(function(resolve, reject) {
+        request.onsuccess = function() {
+            resolve();
+        };
+
+        request.onerror = function() {
+            reject(request.error);
+        };
+    });
 }

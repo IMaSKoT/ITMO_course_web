@@ -1,4 +1,39 @@
 const form = document.querySelector('form');
+const params = new URLSearchParams(window.location.search)
+const idParam = params.get("id")
+let StudentId
+// Проверка при изменении 
+if (idParam === null){
+    studentId = null
+} else {
+    studentId = Number(idParam)
+}
+
+const isEditMode = studentId !== null
+// Функция для update
+async function prepare() {
+    if (isEditMode == false){
+        return;
+    }
+    const student = await getStudent(studentId)
+    const nameParts = student.fullName.split(" ")
+
+    document.getElementById('surname').value = nameParts[0]
+    document.getElementById('name').value = nameParts[1]
+    document.getElementById('patronymic').value = nameParts[2] ?? ""
+    document.getElementById('group').value = student.group
+    document.getElementById('isuId').value = student.isuId
+    document.getElementById('dormitory').value = student.dormitory
+    document.getElementById('room').value = student.room
+    document.getElementById('settlementPeriod').value = student.settlementPeriod
+    document.getElementById('isForeign').checked = student.isForeign
+    document.getElementById('notes').value = student.notes
+
+
+
+    console.log(student)
+}
+prepare()
 form.addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -26,5 +61,10 @@ form.addEventListener('submit', function (event) {
     isForeign: isForeign,
     notes: notes};
     console.log(student)
-    addStudent(student)
+    if (isEditMode){
+        student.id = studentId
+        updateStudent(student)
+    } else {
+        addStudent(student)
+    }
 });

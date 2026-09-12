@@ -8,7 +8,11 @@ function renderStudents(students){
         const row = document.createElement("tr")
         fields.forEach(function(field){
             const elem = document.createElement("td")
-            elem.textContent = student[field]
+            if (field === "isForeign") {
+                elem.textContent = student[field] ? "Да" : "Нет";
+            } else {
+                elem.textContent = student[field]
+            }
             row.append(elem)
         })
         //Кнопка 'удалить'
