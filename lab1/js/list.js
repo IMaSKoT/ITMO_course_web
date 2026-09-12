@@ -1,7 +1,3 @@
-import { students } from "./mock-data.js"
-
-console.log('Привет')
-
 const tableBody = document.querySelector('#students-table-body')
 const fields = ["fullName", "group", "isuId","dormitory", "room", "settlementPeriod", "isForeign", "notes"]
 // Функция добавления студентов в таблицу по списку студентов
@@ -21,12 +17,11 @@ function renderStudents(students){
         const actionsCell = document.createElement("td")
         actionsCell.append(deleteButton)
         //Назначем удаление кнопке
-        deleteButton.addEventListener("click", function(){
-            const index = students.findIndex(function(item){
-                return item.id === student.id;
-            })
-            students.splice(index, 1)
+        deleteButton.addEventListener("click", async function(){
+            await deleteStudent(student.id)
+            const students = await getAllStudents()
             renderStudents(students)
+
         })
         //Кнопка 'подробнее'
         const detailsLink = document.createElement("a")
@@ -43,7 +38,13 @@ function renderStudents(students){
         tableBody.append(row)
     })
 }
-renderStudents(students)
+async function loadStudents() {
+    const students = await getAllStudents();
+    console.log(students)
+    renderStudents(students)
+}
+
+loadStudents();
 
 
 
