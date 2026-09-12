@@ -34,7 +34,7 @@ async function prepare() {
     console.log(student)
 }
 prepare()
-form.addEventListener('submit', function (event) {
+form.addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const fullName = (document.getElementById('surname').value + " " + document.getElementById('name').value +
@@ -63,8 +63,10 @@ form.addEventListener('submit', function (event) {
     console.log(student)
     if (isEditMode){
         student.id = studentId
-        updateStudent(student)
+        await updateStudent(student)
+        window.location.href = "index.html?status=updated"
     } else {
-        addStudent(student)
+        await addStudent(student)
+        window.location.href = "index.html?status=added"
     }
 });

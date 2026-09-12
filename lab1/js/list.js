@@ -1,5 +1,16 @@
+const params = new URLSearchParams(window.location.search)
+const statusParam = params.get("status")
+
 const tableBody = document.querySelector('#students-table-body')
 const fields = ["fullName", "group", "isuId","dormitory", "room", "settlementPeriod", "isForeign", "notes"]
+// Статус изменения/добавления на гланой странице
+const statusMessage = document.querySelector("#status-message");
+if (statusParam === "added") {
+    statusMessage.textContent = "Студент успешно добавлен!";
+}
+if (statusParam === "updated") {
+    statusMessage.textContent = "Данные студента успешно изменены!";
+}
 // Функция добавления студентов в таблицу по списку студентов
 function renderStudents(students){
     tableBody.innerHTML = "";
@@ -25,6 +36,7 @@ function renderStudents(students){
             await deleteStudent(student.id)
             const students = await getAllStudents()
             renderStudents(students)
+            statusMessage.textContent = 'Студент успешно удалён!'
 
         })
         //Кнопка 'подробнее'
