@@ -1,4 +1,174 @@
-table, th, td {
-    border: 1px solid black;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+    padding: 20px;
+}
+
+header,
+main {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+form div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+form label {
+    flex: 0 0 180px;
+}
+
+form input,
+form textarea {
+    flex: 1 1 auto;
+}
+
+form input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+}
+
+form input,
+form textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font: inherit;
+}
+
+form input:focus,
+form textarea:focus {
+    border-color: #2c6fbb;
+    outline: none;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background: #2c6fbb;
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #22568f;
+}
+
+main > a {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 16px;
+    border: 1px solid #2c6fbb;
+    border-radius: 4px;
+    color: #2c6fbb;
+    text-decoration: none;
+}
+
+main > a:hover {
+    background: #2c6fbb;
+    color: #fff;
+}
+
+table {
+    width: 100%;
     border-collapse: collapse;
+    background: #fff;
+    margin-bottom: 16px;
+}
+
+th,
+td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #f0f0f0;
+    white-space: nowrap;
+}
+
+td button {
+    padding: 4px 10px;
+    font-size: 14px;
+    background: #c0392b;
+}
+
+td button:hover {
+    background: #96301f;
+}
+
+td a {
+    display: inline-block;
+    margin-left: 5px;
+    color: #2c6fbb;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+td a:hover {
+    text-decoration: underline;
+}
+
+td a:visited {
+    color: #2c6fbb;
+}
+
+.student-info {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.student-info h2 {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.student-info p {
+    margin-bottom: 8px;
+}
+
+.student-notes {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #ddd;
+}
+
+@media (max-width: 700px) {
+    form div {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+
+    form label {
+        flex: 0 0 auto;
+    }
+
+    form input[type="checkbox"] {
+        align-self: flex-start;
+    }
+
+    .table-wrap {
+    overflow-x: auto;
+    }
 }

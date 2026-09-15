@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Список студентов</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="img/img.png">
 </head>
 <body>
     <header>
@@ -13,6 +14,7 @@
     </header>
     <main>
         <h2>Таблица студентов</h2>
+        <div class="table-wrap">
         <table>
             <thead>
                 <tr>
@@ -28,12 +30,12 @@
                 </tr>
             </thead>
             <tbody id="students-table-body">
-
             </tbody>
         </table>
+        </div>
         <a href="form.html">Добавить студента</a>
         <script src="js/db.js"></script>
-        <script type="module" src="js/list.js"></script>
+        <script src="js/list.js"></script>
     </main>
 </body>
 </html>

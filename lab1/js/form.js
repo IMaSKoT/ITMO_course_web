@@ -1,7 +1,7 @@
 const form = document.querySelector('form');
 const params = new URLSearchParams(window.location.search)
 const idParam = params.get("id")
-let StudentId
+let studentId
 // Проверка при изменении 
 if (idParam === null){
     studentId = null
