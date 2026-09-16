@@ -16,6 +16,11 @@ async function prepare() {
         return;
     }
     const student = await getStudent(studentId)
+    if (student === undefined) {
+        alert("Студент не найден")
+        window.location.href = "index.html"
+        return
+    }
     const nameParts = student.fullName.split(" ")
 
     document.getElementById('surname').value = nameParts[0]
