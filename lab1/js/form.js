@@ -50,6 +50,10 @@ form.addEventListener('submit', async function (event) {
     if (dormInfo !== 0 && dormInfo !== 3) {
     alert('Заполните все три поля об общежитии или оставьте их пустыми');
     return;}
+    const isuCopy = (await getAllStudents()).find(s => s.isuId === isuId)
+    if (isuCopy !== undefined && isuCopy.id !== studentId) {
+    alert('Студент с таким ИСУ уже существует');
+    return;}
     console.log(fullName, group, isuId, dormitory, room, settlementPeriod, isForeign, notes);
     const student = {
     fullName: fullName,
