@@ -2,6 +2,12 @@ const params = new URLSearchParams(window.location.search)
 const id = Number(params.get("id"))
 
 async function loadStudent() {
+    if (id === null || !Number.isInteger(id) || id <= 0) {
+        document.querySelector(".student-info").textContent =
+            "Студент не найден"
+        return
+    }
+
     const student = await getStudent(id);
     if (student === undefined) {
         document.querySelector(".student-info").textContent =
