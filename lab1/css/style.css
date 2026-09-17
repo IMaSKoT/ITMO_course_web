@@ -188,7 +188,6 @@ td a:hover {
     overflow-x: auto;
 }
 
-/* 700px — переменную сюда подставить нельзя, в условиях @media var() не работает */
 @media (max-width: 700px) {
     form div {
         flex-direction: column;
