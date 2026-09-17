@@ -153,6 +153,10 @@ td a:visited {
     border-top: 1px solid #ddd;
 }
 
+.table-wrap {
+    overflow-x: auto;
+    }
+
 @media (max-width: 700px) {
     form div {
         flex-direction: column;
