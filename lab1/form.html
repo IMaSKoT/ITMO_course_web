@@ -15,11 +15,13 @@
     <form>
         <div>
             <label for="surname">Фамилия</label>
-            <input type="text" id="surname" placeholder="Иванов" pattern='[А-яЁё\-]{2,43}' name="surname" required>
+            <input type="text" id="surname" placeholder="Иванов" pattern='[А-яЁё\-]{2,43}' name="surname"
+                   title="Ограничение по длине 45 букв" required>
         </div>
         <div>
             <label for="name">Имя</label>
-            <input type="text" id="name" placeholder="Иван" pattern='[А-яЁё\-]{2,45}' name="name" required>
+            <input type="text" id="name" placeholder="Иван" pattern='[А-яЁё\-]{2,45}' name="name"
+                   title="Ограничение по длине 45 букв" required>
         </div>
         <div>
             <label for="patronymic">Отчество</label>
