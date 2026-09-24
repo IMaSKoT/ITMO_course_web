@@ -1,0 +1,2 @@
+class DormitoryDataError(Exception):
+    pass

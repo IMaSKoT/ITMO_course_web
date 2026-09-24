@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from pydantic import ValidationError
 
+from backend.errors import DormitoryDataError
 from backend.dto import StudentCreateDTO
 from backend.service import create_student, get_students
 
@@ -32,7 +33,15 @@ def create_student_route():
                 "details": error.errors()
             }
         }, 422
-    student = create_student(dto)
+    try:
+        student = create_student(dto)
+    except DormitoryDataError as error:
+        return {
+            "error": {
+                "code": "INVALID_DORMITORY_DATA",
+                "message": str(error)
+            }
+        }, 422
 
     return {
         "fullName": student.fullName,
