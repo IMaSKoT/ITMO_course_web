@@ -1,1 +1,82 @@
-[]
+[
+  {
+    "fullName": "Петров Пётр Петрович",
+    "group": "P3210",
+    "isuId": 111111,
+    "dormitory": 8,
+    "room": 412,
+    "settlementPeriod": "2025-09-01",
+    "isForeign": false,
+    "notes": null
+  },
+  {
+    "fullName": "Смирнова Анна Игоревна",
+    "group": "P3210",
+    "isuId": 222222,
+    "dormitory": 8,
+    "room": 305,
+    "settlementPeriod": "2025-09-01",
+    "isForeign": false,
+    "notes": "Староста группы"
+  },
+  {
+    "fullName": "Ли Вэй",
+    "group": "P3210",
+    "isuId": 333333,
+    "dormitory": null,
+    "room": null,
+    "settlementPeriod": null,
+    "isForeign": true,
+    "notes": "Ждёт заселения"
+  },
+  {
+    "fullName": "Кузнецов Дмитрий Алексеевич",
+    "group": "P3211",
+    "isuId": 444444,
+    "dormitory": 3,
+    "room": 118,
+    "settlementPeriod": "2024-09-01",
+    "isForeign": false,
+    "notes": null
+  },
+  {
+    "fullName": "Алиев Тимур Рустамович",
+    "group": "P3211",
+    "isuId": 555555,
+    "dormitory": 8,
+    "room": 412,
+    "settlementPeriod": "2025-02-10",
+    "isForeign": true,
+    "notes": "Сосед Петрова"
+  },
+  {
+    "fullName": "Волкова Мария Сергеевна",
+    "group": "P3212",
+    "isuId": 666666,
+    "dormitory": 3,
+    "room": 227,
+    "settlementPeriod": "2024-09-01",
+    "isForeign": false,
+    "notes": null
+  },
+  {
+    "fullName": "Нгуен Ван Минь",
+    "group": "P3212",
+    "isuId": 777777,
+    "dormitory": 7,
+    "room": 509,
+    "settlementPeriod": "2025-09-01",
+    "isForeign": true,
+    "notes": null
+  },
+  {
+    "fullName": "Орлов Илья Викторович",
+    "group": "M3301",
+    "isuId": 888888,
+    "dormitory": null,
+    "room": null,
+    "settlementPeriod": null,
+    "isForeign": false,
+    "notes": "Живёт в Санкт-Петербурге, общежитие не нужно"
+  }
+]
