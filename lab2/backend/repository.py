@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-DATA_FILE = Path(__file__).parent / "students.json"
+DATA_FILE = Path(__file__).parent.parent / "data" / "students.json"
 
 
 def _read_all() -> list[dict]:
@@ -52,51 +52,3 @@ def delete(isu_id: int) -> bool:
             _write_all(students)
             return True
     return False
-
-
-if __name__ == "__main__":
-    petrov = {
-        "fullName": "Петров Пётр Петрович",
-        "group": "P3210",
-        "isuId": 111111,
-        "dormitory": 8,
-        "room": 412,
-        "settlementPeriod": "2025-09-01",
-        "isForeign": False,
-        "notes": None,
-    }
-    li = {
-        "fullName": "Ли Вэй",
-        "group": "P3211",
-        "isuId": 222222,
-        "dormitory": None,
-        "room": None,
-        "settlementPeriod": None,
-        "isForeign": True,
-        "notes": "Ждёт заселения",
-    }
-
-    print("1. Создание")
-    print(create(petrov))
-    print(create(li))
-    print(get_all())
-
-    print("\n2. Поиск существующего")
-    print(get_by_isu(111111))
-
-    print("\n3. Поиск несуществующего (ждём None)")
-    print(get_by_isu(999999))
-
-    print("\n4. Обновление")
-    print(update(111111, {**petrov, "room": 413}))
-    print(get_all())
-
-    print("\n5. Обновление несуществующего (ждём None)")
-    print(update(999999, {**petrov, "isuId": 999999}))
-
-    print("\n6. Удаление (ждём True)")
-    print(delete(222222))
-    print(get_all())
-
-    print("\n7. Повторное удаление (ждём False)")
-    print(delete(222222))
