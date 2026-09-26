@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from pydantic import ValidationError
 
-from backend.errors import DormitoryDataError
+from backend.errors import DormitoryDataError, DuplicateIsuError
 from backend.dto import StudentCreateDTO
 from backend.service import create_student, get_students
 
@@ -42,6 +42,13 @@ def create_student_route():
                 "message": str(error)
             }
         }, 422
+    except DuplicateIsuError as error:
+        return {
+            "error": {
+                "code": "DUPLICATE_ISU",
+                "message": str(error)
+            }
+        }, 409
 
     return {
         "fullName": student.fullName,
