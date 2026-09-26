@@ -1,0 +1,236 @@
+:root {
+    --color-text: #000;
+    --color-bg: #fff;
+    --color-primary: #2c6fbb;
+    --color-primary-hover: #22568f;
+    --color-danger: #c0392b;
+    --color-danger-hover: #96301f;
+    --color-border: #ddd;
+    --color-border-input: #ccc;
+    --color-table-head: #f0f0f0;
+
+    --font-family: system-ui, sans-serif;
+    --font-size-base: 16px;
+    --font-size-small: 14px;
+    --line-height: 1.5;
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 10px;
+    --space-lg: 12px;
+    --space-xl: 16px;
+    --space-xxl: 20px;
+    --link-offset: 5px;
+
+    --border-width: 1px;
+    --border: var(--border-width) solid var(--color-border);
+    --border-input: var(--border-width) solid var(--color-border-input);
+    --radius: 4px;
+    --radius-lg: 6px;
+
+    --container-width: 1100px;
+    --label-width: 180px;
+    --checkbox-size: 16px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height);
+    color: var(--color-text);
+    background: var(--color-bg);
+    padding: var(--space-xxl);
+}
+
+header,
+main {
+    max-width: var(--container-width);
+    margin: 0 auto;
+}
+
+form div {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+form label {
+    flex: 0 0 var(--label-width);
+}
+
+form input,
+form textarea {
+    flex: 1 1 auto;
+    padding: var(--space-sm);
+    border: var(--border-input);
+    border-radius: var(--radius);
+    font: inherit;
+}
+
+form input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
+}
+
+form input:focus,
+form textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+button {
+    padding: var(--space-md) var(--space-xxl);
+    border: none;
+    border-radius: var(--radius);
+    background: var(--color-primary);
+    color: var(--color-bg);
+    font: inherit;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--color-primary-hover);
+}
+
+main > a {
+    display: inline-block;
+    margin-top: var(--space-xl);
+    padding: var(--space-sm) var(--space-xl);
+    border: var(--border-width) solid var(--color-primary);
+    border-radius: var(--radius);
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+main > a:hover {
+    background: var(--color-primary);
+    color: var(--color-bg);
+}
+
+table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    background: var(--color-bg);
+    margin-bottom: var(--space-xl);
+}
+
+th,
+td {
+    padding: var(--space-md) var(--space-lg);
+    text-align: left;
+    border-bottom: var(--border);
+}
+
+th {
+    background: var(--color-table-head);
+    white-space: nowrap;
+}
+
+td button {
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-small);
+    background: var(--color-danger);
+}
+
+td button:hover {
+    background: var(--color-danger-hover);
+}
+
+td a,
+td a:visited {
+    color: var(--color-primary);
+}
+
+td a {
+    display: inline-block;
+    margin-left: var(--link-offset);
+    text-decoration: none;
+    font-size: var(--font-size-small);
+}
+
+td a:hover {
+    text-decoration: underline;
+}
+
+.student-info {
+    background: var(--color-bg);
+    padding: var(--space-xxl);
+    border: var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.student-info h2 {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: var(--border);
+}
+
+.student-info p {
+    margin-bottom: var(--space-sm);
+}
+
+#filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xxl);
+    background: var(--color-table-head);
+    border-radius: var(--radius-lg);
+}
+
+#filters-form label {
+    display: flex;
+    flex-direction: column;
+}
+
+#filters-form select {
+    padding: var(--space-sm);
+    border: var(--border-input);
+    border-radius: var(--radius);
+    font: inherit;
+}
+
+.student-notes {
+    margin-top: var(--space-xxl);
+    padding-top: var(--space-xl);
+    border-top: var(--border);
+    align-items: flex-end;
+}
+
+#student-notes {
+    word-break: break-word;
+}
+
+.table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+@media (max-width: 700px) {
+    form div {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-xs);
+    }
+
+    form label {
+        flex: 0 0 auto;
+    }
+
+    form input[type="checkbox"] {
+        align-self: flex-start;
+    }
+}
