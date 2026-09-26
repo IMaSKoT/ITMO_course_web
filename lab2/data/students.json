@@ -78,15 +78,5 @@
     "settlementPeriod": null,
     "isForeign": false,
     "notes": "Живёт в Санкт-Петербурге, общежитие не нужно"
-  },
-  {
-    "fullName": "Иванов Иван Иванович",
-    "group": "P3223",
-    "isuId": 654321,
-    "dormitory": 8,
-    "room": 312,
-    "settlementPeriod": "2026-09-01",
-    "isForeign": false,
-    "notes": "Тестовый студент"
   }
 ]

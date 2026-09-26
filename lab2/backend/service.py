@@ -1,6 +1,6 @@
 from backend.dto import StudentCreateDTO
 from backend.models import Student
-from backend.errors import DormitoryDataError, DuplicateIsuError
+from backend.errors import DormitoryDataError, DuplicateIsuError, StudentNotFoundError
 from backend import repository
 
 def get_students():
@@ -26,6 +26,16 @@ def create_student(data: StudentCreateDTO) -> Student:
     
     return student
 
+def get_student(isu_id: int):
+    student = repository.get_by_isu(isu_id)
+    if student is None:
+        raise StudentNotFoundError(f"Студент с ИСУ {isu_id} не найден")
+    return student
+
+def delete_student(isu_id: int) -> None:
+    deleted = repository.delete(isu_id)
+    if not deleted:
+        raise StudentNotFoundError(f"Студент с ИСУ {isu_id} не найден")
 def student_to_dict(student: Student) -> dict:
     return {
         "fullName": student.fullName,
