@@ -23,7 +23,7 @@ def get_students_route():
     students = get_students(filters)
     return students
 
-@api.get("requests/<int:isu_id>")
+@api.get("/requests/<int:isu_id>")
 def get_student_route(isu_id: int):
     try:
         student = get_student(isu_id)

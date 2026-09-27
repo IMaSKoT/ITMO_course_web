@@ -98,6 +98,8 @@ class StudentFilterDTO(BaseModel):
         ge=100000,
         le=999999
     )
+    
+    hasDormitory: bool | None = None
 
     dormitory: int | None = Field(
         default=None,
@@ -117,11 +119,5 @@ class StudentFilterDTO(BaseModel):
     )
 
     isForeign: bool | None = None
-
-    notes: str | None = Field(
-        default=None,
-        min_length=1,
-        max_length=1000
-    )
     
-    hasDormitory: bool | None = None
+    

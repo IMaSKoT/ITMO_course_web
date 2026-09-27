@@ -13,6 +13,25 @@ if (statusParam === "updated") {
     statusMessage.textContent = "Данные студента успешно изменены!";
 }
 const filtersForm = document.querySelector('#filters-form')
+const hasDormitoryFilter = document.querySelector('#has-dormitory-filter')
+const dormitoryFilters = document.querySelectorAll('.dormitory-filter')
+
+//функция для скрытия блока с общежитием
+function updateDormitoryFilters() {
+    const hasDormitory = hasDormitoryFilter.value === 'true'
+
+    dormitoryFilters.forEach(filter => {
+        filter.hidden = !hasDormitory
+        filter.querySelector("input").disabled = !hasDormitory
+    })
+}
+
+hasDormitoryFilter.addEventListener(
+    "change",
+    updateDormitoryFilters
+)
+
+updateDormitoryFilters()
 
 function getFilters() {
     return Object.fromEntries(new FormData(filtersForm));
@@ -24,7 +43,10 @@ filtersForm.addEventListener("submit", function (event) {
 });
 
 filtersForm.addEventListener("reset", function () {
-    loadStudents();
+    setTimeout(function() {
+        updateDormitoryFilters()
+        loadStudents();
+    }, 0)
 });
 
 // Функция добавления студентов в таблицу по списку студентов

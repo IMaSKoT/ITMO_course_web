@@ -7,7 +7,7 @@
     "room": 412,
     "settlementPeriod": "2025-09-01",
     "isForeign": false,
-    "notes": null
+    "notes": "Студент года"
   },
   {
     "fullName": "Смирнова Анна Игоревна",
@@ -60,16 +60,6 @@
     "notes": null
   },
   {
-    "fullName": "Нгуен Ван Минь",
-    "group": "P3212",
-    "isuId": 777777,
-    "dormitory": 7,
-    "room": 509,
-    "settlementPeriod": "2025-09-01",
-    "isForeign": true,
-    "notes": null
-  },
-  {
     "fullName": "Орлов Илья Викторович",
     "group": "M3301",
     "isuId": 888888,
@@ -78,5 +68,15 @@
     "settlementPeriod": null,
     "isForeign": false,
     "notes": "Живёт в Санкт-Петербурге, общежитие не нужно"
+  },
+  {
+    "fullName": "Петухов Кирилл Вадимович",
+    "group": "P3223",
+    "isuId": 501755,
+    "dormitory": null,
+    "room": null,
+    "settlementPeriod": null,
+    "isForeign": false,
+    "notes": "Самый красивый мужчина ИТМО ever"
   }
 ]

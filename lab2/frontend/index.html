@@ -25,11 +25,20 @@
             <input type="text" pattern="[1-9][0-9][0-9][0-9][0-9][0-9]" placeholder="555555"
                    title="6-ти значный код, начинающийся не с 0" name="isuId">
         </label>
+
         <label>
+            Наличие общежития
+            <select name="hasDormitory" id="has-dormitory-filter">
+                <option value="">Любое</option>
+                <option value="true">Есть</option>
+                <option value="false">Нет</option>
+            </select>
+        </label>
+        <label class="dormitory-filter">
             Номер общежития
             <input type="number" min="1" placeholder="3" name="dormitory">
         </label>
-        <label>
+        <label class="dormitory-filter">
             Комната
             <input type="number" min="1" placeholder="689" name="room">
         </label>
