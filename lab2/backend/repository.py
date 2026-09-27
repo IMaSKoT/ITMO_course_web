@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from backend.errors import StorageError
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "students.json"
 
@@ -10,13 +11,22 @@ def _read_all() -> list[dict]:
             students = json.load(f)
     except FileNotFoundError:
         students = []
+    except (json.JSONDecodeError, OSError) as error:
+        raise StorageError(
+            "Не удалось прочитать данные студентов"
+        ) from error
     return students
 
 
 
 def _write_all(students: list[dict]) -> None:
-    with open(DATA_FILE, mode="w", encoding="utf-8") as f:
-        json.dump(students, f, ensure_ascii=False, indent=2)
+    try:
+        with open(DATA_FILE, mode="w", encoding="utf-8") as f:
+            json.dump(students, f, ensure_ascii=False, indent=2)
+    except (OSError, TypeError, ValueError) as error:
+        raise StorageError(
+            "Не удалось прочитать данные студентов"
+        ) from error
 
 
 def get_all() -> list[dict]:

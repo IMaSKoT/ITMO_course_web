@@ -1,5 +1,6 @@
 from flask import Flask
 from backend.routes import api
+from backend.errors import StorageError
 
 app = Flask(
     __name__,
@@ -8,6 +9,15 @@ app = Flask(
 )
 
 app.register_blueprint(api, url_prefix="/api")
+
+@app.errorhandler(StorageError)
+def handle_storage_error(error):
+    return {
+        "error": {
+            "code": "STORAGE_ERROR",
+            "message": "Ошибка при работе с хранилищем"
+        }
+    }, 500
 
 @app.get("/")
 def index():

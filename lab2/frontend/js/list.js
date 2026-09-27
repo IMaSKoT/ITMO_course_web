@@ -12,6 +12,9 @@ if (statusParam === "added") {
 if (statusParam === "updated") {
     statusMessage.textContent = "Данные студента успешно изменены!";
 }
+if (statusParam) {
+    window.history.replaceState({}, "", window.location.pathname)
+}
 const filtersForm = document.querySelector('#filters-form')
 const hasDormitoryFilter = document.querySelector('#has-dormitory-filter')
 const dormitoryFilters = document.querySelectorAll('.dormitory-filter')
