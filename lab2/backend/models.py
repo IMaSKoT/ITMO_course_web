@@ -10,5 +10,5 @@ class Student:
     room: int | None = None
     settlementPeriod: date | None = None
     isForeign: bool = False
-    notes: str = ""
+    notes: str | None = None
     
