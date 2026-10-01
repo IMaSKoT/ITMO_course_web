@@ -241,3 +241,9 @@ td a:hover {
         align-self: flex-start;
     }
 }
+
+@media (max-width: 320px) {
+    body {
+        min-width: 320px;
+    }
+}

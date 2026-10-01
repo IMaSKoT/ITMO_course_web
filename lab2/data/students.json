@@ -20,14 +20,14 @@
     "notes": "Староста группы P3210"
   },
   {
-    "fullName": "Ли Вэй",
-    "group": "P3210",
+    "fullName": "Ли Вэй Вэй",
+    "group": "P3213",
     "isuId": 333333,
-    "dormitory": null,
-    "room": null,
-    "settlementPeriod": null,
+    "dormitory": 5,
+    "room": 666,
+    "settlementPeriod": "2007-03-15",
     "isForeign": true,
-    "notes": "Ждёт заселения"
+    "notes": "Ждёт заселения ((("
   },
   {
     "fullName": "Кузнецов Дмитрий Алексеевич",
@@ -78,5 +78,15 @@
     "settlementPeriod": null,
     "isForeign": false,
     "notes": "Самый красивый мужчина ИТМО ever"
+  },
+  {
+    "fullName": "Иванов Иван Иванович",
+    "group": "P3123",
+    "isuId": 555558,
+    "dormitory": 3,
+    "room": 2,
+    "settlementPeriod": "2026-10-15",
+    "isForeign": false,
+    "notes": null
   }
 ]

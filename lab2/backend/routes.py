@@ -153,20 +153,8 @@ def update_student_route(isu_id: int):
             }
         }, 422
     
-    return {
-        "fullName": student.fullName,
-        "group": student.group,
-        "isuId": student.isuId,
-        "dormitory": student.dormitory,
-        "room": student.room,
-        "settlementPeriod": (
-            student.settlementPeriod.isoformat()
-            if student.settlementPeriod is not None
-            else None
-        ),
-        "isForeign": student.isForeign,
-        "notes": student.notes
-    }
+    return student, 200
+
 @api.route("/requests", methods=["QUERY"])
 def query_students_route():
     data = request.get_json(silent=True)

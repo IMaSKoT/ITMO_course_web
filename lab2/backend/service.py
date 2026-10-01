@@ -75,20 +75,20 @@ def update_student(isu_id: int, data: StudentPatchDTO):
          existing_student = repository.get_by_isu(updated_dto.isuId)
          if existing_student is not None:
              raise DuplicateIsuError(f"Студент с ИСУ {updated_dto.isuId} уже существует")
-    updated_student = Student (
-        fullName=updated_dto.fullName,
-        group=updated_dto.group,
-        isuId=updated_dto.isuId,
-        dormitory=updated_dto.dormitory,
-        room=updated_dto.room,
-        settlementPeriod=updated_dto.settlementPeriod,
-        isForeign=updated_dto.isForeign,
-        notes=updated_dto.notes
-    )
+    # updated_student = Student (
+    #     fullName=updated_dto.fullName,
+    #     group=updated_dto.group,
+    #     isuId=updated_dto.isuId,
+    #     dormitory=updated_dto.dormitory,
+    #     room=updated_dto.room,
+    #     settlementPeriod=updated_dto.settlementPeriod,
+    #     isForeign=updated_dto.isForeign,
+    #     notes=updated_dto.notes
+    # )
+    updated_student = Student(**updated_dto.model_dump())
     student_dict = student_to_dict(updated_student)
     repository.update(isu_id, student_dict)
-    return updated_student
-        
+    return student_dict        
 
 def student_to_dict(student: Student) -> dict:
     return {
