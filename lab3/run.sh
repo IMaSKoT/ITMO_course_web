@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-# запуск на Linux/macOS: ./run.sh
 set -a
 . ./.env
 set +a

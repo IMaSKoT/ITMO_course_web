@@ -16,53 +16,40 @@
     </properties>
 
     <dependencies>
-        <!-- Jakarta EE 10: JAX-RS, CDI, JPA, Bean Validation, JSON-B, JTA, EJB
-             scope=provided: реализации уже есть внутри сервера Payara -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>10.0.0</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- MicroProfile Config: чтение настроек из переменных окружения -->
         <dependency>
             <groupId>org.eclipse.microprofile.config</groupId>
             <artifactId>microprofile-config-api</artifactId>
             <version>3.0.3</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- MicroProfile OpenAPI: аннотации для Swagger-документации -->
         <dependency>
             <groupId>org.eclipse.microprofile.openapi</groupId>
             <artifactId>microprofile-openapi-api</artifactId>
             <version>3.1.1</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- драйвер PostgreSQL (кладётся внутрь WAR) -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.4</version>
         </dependency>
-
-        <!-- создание и проверка JWT -->
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
             <version>9.37.3</version>
         </dependency>
-
-        <!-- BCrypt для хеширования паролей -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
     </dependencies>
-
     <build>
         <finalName>dormitory</finalName>
         <plugins>
@@ -83,7 +70,6 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-            <!-- при mvn package скачивает сервер Payara Micro в target/payara-micro.jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
