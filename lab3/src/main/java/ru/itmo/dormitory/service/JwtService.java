@@ -14,7 +14,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import ru.itmo.dormitory.entity.Role;
 import ru.itmo.dormitory.entity.User;
 import ru.itmo.dormitory.error.ApiException;
-import ru.itmo.dormitory.security.AuthenticatedUser;
 
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -48,10 +47,6 @@ public class JwtService {
         }
     }
 
-    public long getAccessTtlSeconds() {
-        return accessTtlMinutes * 60;
-    }
-
     public String createAccessToken(User user) {
         Instant now = Instant.now();
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -70,7 +65,7 @@ public class JwtService {
         }
     }
 
-    public AuthenticatedUser verifyAccessToken(String token) {
+    public JWTClaimsSet verifyAccessToken(String token) {
         try {
             SignedJWT jwt = SignedJWT.parse(token);
             // алгоритм проверяем сами, а не берём из заголовка токена, иначе пролезет alg=none
@@ -88,7 +83,9 @@ public class JwtService {
                 throw ApiException.unauthorized("TOKEN_EXPIRED",
                         "Срок действия access-токена истёк, обновите его через /api/auth/refresh");
             }
-            return new AuthenticatedUser(username, Role.valueOf(role));
+            // неизвестная роль бросит IllegalArgumentException
+            Role.valueOf(role);
+            return claims;
         } catch (ParseException | JOSEException | IllegalArgumentException e) {
             throw invalidToken();
         }

@@ -109,8 +109,7 @@ public class AuthService {
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(refreshTtlDays);
         refreshTokenRepository.save(new RefreshToken(sha256(refreshToken), user, expiresAt));
 
-        return new TokenResponse(accessToken, refreshToken, jwtService.getAccessTtlSeconds(),
-                UserResponse.from(user));
+        return new TokenResponse(accessToken, refreshToken);
     }
 
     private static String hashPassword(String password) {

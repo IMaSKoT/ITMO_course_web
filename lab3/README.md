@@ -93,7 +93,7 @@ src/main/java/ru/itmo/dormitory/
 ├── repository/                доступ к БД через JPA EntityManager
 ├── entity/                    JPA-сущности = таблицы (Student, User, RefreshToken)
 ├── dto/                       то, что приходит и уходит через API (отделено от сущностей)
-├── security/                  @Secured и JwtAuthFilter — проверка токена и роли
+├── security/                  JwtAuthenticationMechanism — проверка токена (Jakarta Security)
 ├── error/                     ApiException и обработчики ошибок (ExceptionMapper)
 └── config/                    DataSource, стартовые данные, настройки JSON
 ```
@@ -106,9 +106,9 @@ src/main/java/ru/itmo/dormitory/
 - **Хеширование паролей** — BCrypt в `AuthService` (соль внутри хеша, стоимость 12)
 - **JWT** — `JwtService`: подпись HS256, проверка алгоритма, подписи, `iss` и `exp`; access живёт 15 минут
 - **Refresh-токены** — случайная строка, в БД лежит её SHA-256 хеш; при обновлении старый отзывается (ротация)
-- **Роли** — своя аннотация `@Secured` + фильтр `JwtAuthFilter`: 401 — кто вы неизвестно, 403 — прав не хватает
+- **Роли** — Jakarta Security: `JwtAuthenticationMechanism` (свой `HttpAuthenticationMechanism`) проверяет токен и сообщает контейнеру пользователя и роль, `@RolesAllowed` на `StudentResource` проверяет права: 401 — кто вы неизвестно, 403 — прав не хватает
 - **Валидация** — Bean Validation в DTO (`@NotNull`, `@Pattern`, `@Min`...) + правила в `StudentService` (общежитие заполнено целиком, дата не раньше 2000 года) + проверки уникальности
 - **Централизованные ошибки** — `error/*ExceptionMapper`
-- **Логирование** — `java.util.logging` в сервисах, фильтре и обработчике ошибок
+- **Логирование** — `java.util.logging` в сервисах, механизме аутентификации и обработчике ошибок
 - **Конфигурация** — `.env` → переменные окружения → MicroProfile Config (`@ConfigProperty`); пример в `.env.example`
 - **Swagger** — MicroProfile OpenAPI (`@Operation`, `@Tag`, `@SecurityScheme`) + `swagger.html`

@@ -1,9 +1,9 @@
 package ru.itmo.dormitory.error;
 
 import jakarta.json.bind.JsonbException;
-import jakarta.ws.rs.NotAllowedException;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.NotSupportedException;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
@@ -15,7 +15,7 @@ import ru.itmo.dormitory.dto.ErrorResponse;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// всё, что не поймали другие мапперы: битый JSON, ошибки JAX-RS и непредвиденные 500
+// всё, что не поймали другие мапперы: битый JSON, 401 и 403, ошибки JAX-RS и непредвиденные 500
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
@@ -26,17 +26,19 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
         if (isJsonError(e)) {
             return build(400, "INVALID_JSON", "Тело запроса должно содержать корректный JSON");
         }
+        // их бросает проверка @RolesAllowed
+        if (e instanceof NotAuthorizedException) {
+            return build(401, "AUTHENTICATION_REQUIRED", "Нужен заголовок Authorization: Bearer <accessToken>");
+        }
+        if (e instanceof ForbiddenException) {
+            LOG.warning("Access denied: " + e.getMessage());
+            return build(403, "ACCESS_DENIED", "Недостаточно прав для этой операции");
+        }
         if (e instanceof NotFoundException) {
             return build(404, "NOT_FOUND", "Ресурс не найден");
         }
-        if (e instanceof NotAllowedException) {
-            return build(405, "METHOD_NOT_ALLOWED", "Метод не поддерживается для этого пути");
-        }
-        if (e instanceof NotSupportedException) {
-            return build(415, "UNSUPPORTED_MEDIA_TYPE", "Ожидается Content-Type: application/json");
-        }
-        if (e instanceof WebApplicationException wae) {
-            int status = wae.getResponse().getStatus();
+        if (e instanceof WebApplicationException) {
+            int status = ((WebApplicationException) e).getResponse().getStatus();
             if (status < 500) {
                 return build(status, "BAD_REQUEST", "Некорректный запрос");
             }

@@ -1,8 +1,10 @@
 package ru.itmo.dormitory.resource;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.json.JsonObject;
+import jakarta.security.enterprise.SecurityContext;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.BeanParam;
@@ -15,10 +17,8 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -26,8 +26,6 @@ import ru.itmo.dormitory.dto.PageResponse;
 import ru.itmo.dormitory.dto.StudentFilter;
 import ru.itmo.dormitory.dto.StudentRequest;
 import ru.itmo.dormitory.dto.StudentResponse;
-import ru.itmo.dormitory.entity.Role;
-import ru.itmo.dormitory.security.Secured;
 import ru.itmo.dormitory.service.StudentService;
 
 import java.util.logging.Logger;
@@ -37,7 +35,7 @@ import java.util.logging.Logger;
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Secured
+@RolesAllowed({"USER", "ADMIN"})
 @Tag(name = "Students", description = "Работа со студентами общежития")
 @SecurityRequirement(name = "bearerAuth")
 public class StudentResource {
@@ -48,7 +46,7 @@ public class StudentResource {
     @Inject
     private StudentService studentService;
 
-    @Context
+    @Inject
     private SecurityContext securityContext;
 
     @GET
@@ -71,7 +69,7 @@ public class StudentResource {
     }
 
     @POST
-    @Secured(Role.ADMIN)
+    @RolesAllowed("ADMIN")
     @Operation(summary = "Создать студента (только ADMIN)")
     public Response create(@NotNull(message = BODY_REQUIRED) @Valid StudentRequest request) {
         LOG.info("POST student by " + currentUser());
@@ -81,7 +79,7 @@ public class StudentResource {
 
     @PUT
     @Path("/{isuId}")
-    @Secured(Role.ADMIN)
+    @RolesAllowed("ADMIN")
     @Operation(summary = "Полностью заменить данные студента (только ADMIN)")
     public StudentResponse replace(@PathParam("isuId") int isuId,
                                    @NotNull(message = BODY_REQUIRED) @Valid StudentRequest request) {
@@ -91,7 +89,7 @@ public class StudentResource {
 
     @PATCH
     @Path("/{isuId}")
-    @Secured(Role.ADMIN)
+    @RolesAllowed("ADMIN")
     @Operation(summary = "Изменить только переданные поля студента (только ADMIN)")
     public StudentResponse patch(@PathParam("isuId") int isuId,
                                  @NotNull(message = BODY_REQUIRED) JsonObject changes) {
@@ -101,7 +99,7 @@ public class StudentResource {
 
     @DELETE
     @Path("/{isuId}")
-    @Secured(Role.ADMIN)
+    @RolesAllowed("ADMIN")
     @Operation(summary = "Удалить студента (только ADMIN)")
     public Response delete(@PathParam("isuId") int isuId) {
         LOG.info("DELETE student " + isuId + " by " + currentUser());
@@ -110,6 +108,6 @@ public class StudentResource {
     }
 
     private String currentUser() {
-        return securityContext.getUserPrincipal().getName();
+        return securityContext.getCallerPrincipal().getName();
     }
 }
