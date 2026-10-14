@@ -85,7 +85,7 @@
           "name": "Неверные данные студента",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/requests",
+            "url": "{{baseUrl}}/students",
             "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 42,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Проверка API\"\n}"},
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
           },
@@ -95,7 +95,7 @@
           "name": "Некорректный JSON",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/requests",
+            "url": "{{baseUrl}}/students",
             "body": {"mode": "raw", "raw": "{\"fullName\":"},
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
           },
@@ -105,7 +105,7 @@
           "name": "Создать тестового студента",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/requests",
+            "url": "{{baseUrl}}/students",
             "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 777777,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Проверка API\"\n}"},
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
           },
@@ -115,7 +115,7 @@
           "name": "Повторный ИСУ: отказ",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/requests",
+            "url": "{{baseUrl}}/students",
             "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 777777,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Проверка API\"\n}"},
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
           },
@@ -125,7 +125,7 @@
           "name": "Поиск, сортировка и пагинация",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/requests?fullName=Тестов&group=P3210&sort=isuId&order=desc&page=1&size=5",
+            "url": "{{baseUrl}}/students?fullName=Тестов&group=P3210&sort=isuId&order=desc&page=1&size=5",
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}]
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
@@ -134,7 +134,7 @@
           "name": "Фильтрация через QUERY",
           "request": {
             "method": "QUERY",
-            "url": "{{baseUrl}}/requests",
+            "url": "{{baseUrl}}/students",
             "body": {"mode": "raw", "raw": "{\n  \"group\": \"P3210\",\n  \"hasDormitory\": false\n}"},
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
           },
@@ -144,7 +144,7 @@
           "name": "Получить тестового студента",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/requests/777777",
+            "url": "{{baseUrl}}/students/777777",
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}]
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
@@ -153,7 +153,7 @@
           "name": "Полностью заменить данные",
           "request": {
             "method": "PUT",
-            "url": "{{baseUrl}}/requests/777777",
+            "url": "{{baseUrl}}/students/777777",
             "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 777777,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Изменено через PUT\"\n}"},
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
           },
@@ -163,7 +163,7 @@
           "name": "Изменить заметку",
           "request": {
             "method": "PATCH",
-            "url": "{{baseUrl}}/requests/777777",
+            "url": "{{baseUrl}}/students/777777",
             "body": {"mode": "raw", "raw": "{\n  \"notes\": \"Изменено через PATCH\"\n}"},
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
           },
@@ -173,7 +173,7 @@
           "name": "Удалить тестового студента",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/requests/777777",
+            "url": "{{baseUrl}}/students/777777",
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}]
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 204\", () => pm.response.to.have.status(204));"]}}]
@@ -182,7 +182,7 @@
           "name": "После удаления студент не найден",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/requests/777777",
+            "url": "{{baseUrl}}/students/777777",
             "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}]
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"]}}]
@@ -196,7 +196,7 @@
           "name": "USER может читать",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/requests",
+            "url": "{{baseUrl}}/students",
             "header": [{"key": "Authorization", "value": "Bearer {{userAccessToken}}"}]
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
@@ -205,7 +205,7 @@
           "name": "USER может получить одного студента",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/requests/111111",
+            "url": "{{baseUrl}}/students/111111",
             "header": [{"key": "Authorization", "value": "Bearer {{userAccessToken}}"}]
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
@@ -214,7 +214,7 @@
           "name": "USER не может добавлять",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/requests",
+            "url": "{{baseUrl}}/students",
             "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 777777,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Проверка API\"\n}"},
             "header": [{"key": "Authorization", "value": "Bearer {{userAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
           },
@@ -224,7 +224,7 @@
           "name": "Без токена: отказ",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/requests"
+            "url": "{{baseUrl}}/students"
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 401\", () => pm.response.to.have.status(401));"]}}]
         }

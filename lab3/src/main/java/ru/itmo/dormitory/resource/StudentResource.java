@@ -30,7 +30,7 @@ import ru.itmo.dormitory.service.StudentService;
 
 import java.util.logging.Logger;
 
-@Path("/requests")
+@Path("/students")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
