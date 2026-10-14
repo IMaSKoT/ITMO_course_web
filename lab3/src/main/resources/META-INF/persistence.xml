@@ -3,10 +3,8 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
-    <!-- JTA: транзакциями управляет сервер, а мы только ставим @Transactional -->
     <persistence-unit name="dormitoryPU" transaction-type="JTA">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <!-- DataSource описан в классе config/DataInitializer (@DataSourceDefinition) -->
         <jta-data-source>java:app/jdbc/dormitory</jta-data-source>
 
         <class>ru.itmo.dormitory.entity.Student</class>
@@ -15,10 +13,8 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
-            <!-- EclipseLink сам создаёт таблицы, если их нет, и не удаляет данные при перезапуске -->
             <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
             <property name="eclipselink.ddl-generation.output-mode" value="database"/>
-            <!-- чтобы увидеть SQL в логе, поставьте FINE -->
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.level.sql" value="INFO"/>
             <property name="eclipselink.logging.parameters" value="true"/>
