@@ -1,0 +1,30 @@
+package ru.itmo.dormitory.repository;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import ru.itmo.dormitory.entity.RefreshToken;
+
+import java.util.Optional;
+
+@ApplicationScoped
+public class RefreshTokenRepository {
+
+    @PersistenceContext(unitName = "dormitoryPU")
+    private EntityManager em;
+
+    public Optional<RefreshToken> findByHash(String tokenHash) {
+        // join fetch: сразу подтягиваем пользователя одним запросом
+        return em.createQuery(
+                        "select t from RefreshToken t join fetch t.user where t.tokenHash = :hash",
+                        RefreshToken.class)
+                .setParameter("hash", tokenHash)
+                .getResultList()
+                .stream()
+                .findFirst();
+    }
+
+    public void save(RefreshToken token) {
+        em.persist(token);
+    }
+}
