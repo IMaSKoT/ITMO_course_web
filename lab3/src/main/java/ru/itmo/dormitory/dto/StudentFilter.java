@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.QueryParam;
 
-// для GET приходит из query-параметров, для QUERY из JSON-тела с теми же именами полей
 public class StudentFilter {
 
     @QueryParam("fullName")
@@ -37,7 +36,6 @@ public class StudentFilter {
     @Max(value = 9999, message = StudentRequest.ROOM_MESSAGE)
     public Integer room;
 
-    // строкой, потому что JAX-RS не умеет сам разбирать LocalDate из query-параметра
     @QueryParam("settlementPeriod")
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Дата в формате ГГГГ-ММ-ДД")
     public String settlementPeriod;

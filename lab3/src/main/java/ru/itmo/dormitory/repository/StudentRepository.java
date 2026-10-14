@@ -16,7 +16,6 @@ import java.util.Optional;
 @ApplicationScoped
 public class StudentRepository {
 
-    // в ORDER BY попадают только поля из этого списка
     private static final Map<String, String> SORT_FIELDS = Map.of(
             "fullName", "s.fullName",
             "group", "s.groupName",
@@ -56,7 +55,7 @@ public class StudentRepository {
     public List<Student> findPage(StudentFilter filter, LocalDate settlementDate) {
         Map<String, Object> params = new HashMap<>();
         String where = buildWhere(filter, settlementDate, params);
-        // s.id вторым ключом, чтобы порядок не менялся между страницами
+
         String orderBy = " order by " + SORT_FIELDS.get(filter.sort) + " " + filter.order + ", s.id";
 
         TypedQuery<Student> query = em.createQuery("select s from Student s" + where + orderBy, Student.class);
@@ -75,7 +74,6 @@ public class StudentRepository {
         return query.getSingleResult();
     }
 
-    // значения идут через параметры запроса, а не склейкой строк, чтобы не было SQL-инъекций
     private String buildWhere(StudentFilter filter, LocalDate settlementDate, Map<String, Object> params) {
         StringBuilder where = new StringBuilder(" where 1 = 1");
 

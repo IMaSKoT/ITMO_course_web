@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// ${ENV=...} Payara подставляет из переменных окружения
 @DataSourceDefinition(
         name = "java:app/jdbc/dormitory",
         className = "org.postgresql.ds.PGSimpleDataSource",
@@ -49,7 +48,6 @@ public class DataInitializer {
     @ConfigProperty(name = "admin.password")
     private Optional<String> adminPassword;
 
-    // старт приложения, в отличие от @PostConstruct здесь уже работает @Transactional
     void onStart(@Observes @Initialized(ApplicationScoped.class) Object event) {
         createAdmin();
         importStudents();

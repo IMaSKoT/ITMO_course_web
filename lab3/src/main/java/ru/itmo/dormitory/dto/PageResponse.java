@@ -2,7 +2,6 @@ package ru.itmo.dormitory.dto;
 
 import java.util.List;
 
-// одна страница списка + информация для пагинации на клиенте
 public class PageResponse<T> {
 
     public List<T> items;

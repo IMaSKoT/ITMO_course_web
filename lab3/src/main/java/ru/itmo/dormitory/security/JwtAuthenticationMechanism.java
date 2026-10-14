@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
-// свой HttpAuthenticationMechanism: достаёт токен из заголовка Authorization: Bearer
-// и сообщает контейнеру, кто пользователь и какая у него роль, права дальше проверяет @RolesAllowed
 @ApplicationScoped
 public class JwtAuthenticationMechanism implements HttpAuthenticationMechanism {
 
@@ -35,7 +33,7 @@ public class JwtAuthenticationMechanism implements HttpAuthenticationMechanism {
                                                 HttpMessageContext context) {
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith(BEARER_PREFIX)) {
-            // без токена запрос идёт дальше анонимно, закрытые методы ответят 401
+
             return context.doNothing();
         }
 
@@ -44,7 +42,7 @@ public class JwtAuthenticationMechanism implements HttpAuthenticationMechanism {
             String role = (String) claims.getClaim("role");
             return context.notifyContainerAboutLogin(claims.getSubject(), Set.of(role));
         } catch (ApiException e) {
-            // механизм работает до JAX-RS, поэтому ExceptionMapper сюда не дотягивается и JSON пишем сами
+
             LOG.info("Rejected token: " + e.getCode());
             return writeError(response, e);
         }
@@ -57,7 +55,7 @@ public class JwtAuthenticationMechanism implements HttpAuthenticationMechanism {
         try {
             response.getWriter().write(JSONB.toJson(ErrorResponse.of(e.getCode(), e.getMessage())));
         } catch (IOException ignored) {
-            // клиент уже отключился, отвечать некому
+
         }
         return AuthenticationStatus.SEND_FAILURE;
     }

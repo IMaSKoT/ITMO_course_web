@@ -30,7 +30,6 @@ import ru.itmo.dormitory.service.StudentService;
 
 import java.util.logging.Logger;
 
-// читать может любой вошедший пользователь, менять только ADMIN
 @Path("/requests")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
@@ -55,7 +54,6 @@ public class StudentResource {
         return studentService.getStudents(filter);
     }
 
-    // без @Operation: в OpenAPI 3.0 нет метода QUERY, и генератор Payara падает на нём с NPE
     @QUERY
     public PageResponse<StudentResponse> queryStudents(@NotNull(message = BODY_REQUIRED) @Valid StudentFilter filter) {
         return studentService.getStudents(filter);

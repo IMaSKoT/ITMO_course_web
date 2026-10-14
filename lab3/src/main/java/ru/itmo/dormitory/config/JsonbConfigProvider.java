@@ -6,7 +6,6 @@ import jakarta.json.bind.JsonbConfig;
 import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Provider;
 
-// null-поля пишем в ответ, на неизвестные поля в запросе отвечаем ошибкой (как extra="forbid" в pydantic)
 @Provider
 public class JsonbConfigProvider implements ContextResolver<Jsonb> {
 

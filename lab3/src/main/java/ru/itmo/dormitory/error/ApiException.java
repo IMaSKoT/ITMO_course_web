@@ -1,6 +1,5 @@
 package ru.itmo.dormitory.error;
 
-// ошибка с HTTP-статусом и кодом, в JSON её превращает ApiExceptionMapper
 public class ApiException extends RuntimeException {
 
     private final int status;

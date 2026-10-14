@@ -4,7 +4,6 @@ import ru.itmo.dormitory.entity.Student;
 
 import java.time.LocalDate;
 
-// id из БД наружу не отдаём, студента определяет номер ИСУ
 public class StudentResponse {
 
     public String fullName;

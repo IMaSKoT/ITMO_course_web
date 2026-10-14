@@ -68,8 +68,6 @@ public class AuthService {
     public TokenResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.username.trim()).orElse(null);
 
-        // одна ошибка на "нет такого пользователя" и "неверный пароль",
-        // чтобы по ответу нельзя было подобрать существующие логины
         if (user == null || !BCrypt.checkpw(request.password, user.getPasswordHash())) {
             LOG.warning("Failed login attempt for username: " + request.username);
             throw ApiException.unauthorized("INVALID_CREDENTIALS", "Неверное имя пользователя или пароль");
@@ -86,7 +84,6 @@ public class AuthService {
                 .orElseThrow(() -> ApiException.unauthorized("INVALID_REFRESH_TOKEN",
                         "Refresh-токен недействителен или истёк, войдите заново"));
 
-        // старый refresh-токен одноразовый, взамен выдаём новую пару
         stored.revoke();
         LOG.info("Tokens refreshed for user: " + stored.getUser().getUsername());
         return issueTokens(stored.getUser());
@@ -105,7 +102,6 @@ public class AuthService {
         String accessToken = jwtService.createAccessToken(user);
         String refreshToken = generateRefreshToken();
 
-        // в БД лежит только хеш refresh-токена, сам токен знает только клиент
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(refreshTtlDays);
         refreshTokenRepository.save(new RefreshToken(sha256(refreshToken), user, expiresAt));
 

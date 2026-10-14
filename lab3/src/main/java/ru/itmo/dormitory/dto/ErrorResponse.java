@@ -2,7 +2,6 @@ package ru.itmo.dormitory.dto;
 
 import java.util.List;
 
-// { "error": { "code": "...", "message": "...", "details": [...] } }
 public class ErrorResponse {
 
     public ErrorBody error;

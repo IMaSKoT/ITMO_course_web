@@ -15,7 +15,6 @@ import ru.itmo.dormitory.dto.ErrorResponse;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// всё, что не поймали другие мапперы: битый JSON, 401 и 403, ошибки JAX-RS и непредвиденные 500
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
@@ -26,7 +25,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
         if (isJsonError(e)) {
             return build(400, "INVALID_JSON", "Тело запроса должно содержать корректный JSON");
         }
-        // их бросает проверка @RolesAllowed
+
         if (e instanceof NotAuthorizedException) {
             return build(401, "AUTHENTICATION_REQUIRED", "Нужен заголовок Authorization: Bearer <accessToken>");
         }
@@ -47,7 +46,6 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
         return build(500, "INTERNAL_ERROR", "Внутренняя ошибка сервера");
     }
 
-    // JSON-B бросает JsonbException, Jersey может обернуть её в ProcessingException
     private boolean isJsonError(Throwable e) {
         while (e != null) {
             if (e instanceof JsonbException || e instanceof ProcessingException) {

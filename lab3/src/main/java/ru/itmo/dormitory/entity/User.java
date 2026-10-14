@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-// user зарезервировано в PostgreSQL, поэтому users
 @Entity
 @Table(name = "users")
 public class User {

@@ -79,14 +79,12 @@ public class StudentService {
             throw duplicateIsu(request.isuId);
         }
 
-        // save() не нужен: изменения управляемой сущности уйдут в БД при коммите
         copyToEntity(request, student);
 
         LOG.info("Updated student isuId=" + isuId);
         return StudentResponse.from(student);
     }
 
-    // JSON Merge Patch: накладываем изменения на текущие данные и проверяем результат как при PUT
     @Transactional
     public StudentResponse patch(int isuId, JsonObject changes) {
         for (String field : changes.keySet()) {
@@ -130,7 +128,6 @@ public class StudentService {
                 ApiException.notFound("STUDENT_NOT_FOUND", "Студент с ИСУ " + isuId + " не найден"));
     }
 
-    // общежитие, комната и дата заселения заполняются либо все вместе, либо никакие
     private void checkDormitoryData(StudentRequest request) {
         boolean allSet = request.dormitory != null && request.room != null && request.settlementPeriod != null;
         boolean noneSet = request.dormitory == null && request.room == null && request.settlementPeriod == null;

@@ -12,7 +12,6 @@ import ru.itmo.dormitory.dto.ErrorResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-// ошибки Bean Validation отдаём как 422 со списком полей
 @Provider
 public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
@@ -31,7 +30,6 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
                 .build();
     }
 
-    // путь вида "create.request.fullName" -> берём последнюю часть "fullName"
     private String fieldName(Path path) {
         String name = null;
         for (Path.Node node : path) {

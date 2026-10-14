@@ -2,3 +2,4 @@ target/
 .env
 .idea/
 *.iml
+postman/local.postman_environment.json

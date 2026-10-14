@@ -21,7 +21,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-// access-токены: JWT с подписью HS256
 @ApplicationScoped
 public class JwtService {
 
@@ -68,7 +67,7 @@ public class JwtService {
     public JWTClaimsSet verifyAccessToken(String token) {
         try {
             SignedJWT jwt = SignedJWT.parse(token);
-            // алгоритм проверяем сами, а не берём из заголовка токена, иначе пролезет alg=none
+
             boolean validSignature = JWSAlgorithm.HS256.equals(jwt.getHeader().getAlgorithm())
                     && jwt.verify(new MACVerifier(secretBytes));
             JWTClaimsSet claims = jwt.getJWTClaimsSet();
@@ -83,7 +82,7 @@ public class JwtService {
                 throw ApiException.unauthorized("TOKEN_EXPIRED",
                         "Срок действия access-токена истёк, обновите его через /api/auth/refresh");
             }
-            // неизвестная роль бросит IllegalArgumentException
+
             Role.valueOf(role);
             return claims;
         } catch (ParseException | JOSEException | IllegalArgumentException e) {

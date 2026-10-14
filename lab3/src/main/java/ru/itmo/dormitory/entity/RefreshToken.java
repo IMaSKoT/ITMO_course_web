@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-// у пользователя может быть несколько активных токенов, например с телефона и с ноутбука
 @Entity
 @Table(name = "refresh_tokens")
 public class RefreshToken {

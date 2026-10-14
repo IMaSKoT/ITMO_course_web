@@ -20,7 +20,6 @@ public class Student {
     @Column(name = "full_name", nullable = false, length = 135)
     private String fullName;
 
-    // group зарезервировано в SQL, поэтому groupName
     @Column(name = "study_group", nullable = false, length = 5)
     private String groupName;
 

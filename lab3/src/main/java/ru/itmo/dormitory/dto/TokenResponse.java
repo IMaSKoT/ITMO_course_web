@@ -1,6 +1,5 @@
 package ru.itmo.dormitory.dto;
 
-// ответ на /auth/login и /auth/refresh
 public class TokenResponse {
 
     public String accessToken;

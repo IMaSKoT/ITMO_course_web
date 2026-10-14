@@ -1,415 +1,80 @@
 {
-  "info": {
-    "name": "Lab3 Dormitory API (Jakarta EE + JWT)",
-    "description": "Запускать папки по порядку (Run collection). Перед запуском проверьте переменные adminUsername/adminPassword — они должны совпадать с ADMIN_USERNAME/ADMIN_PASSWORD из .env",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
+  "info": {"name": "Lab3 — основные проверки API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8080/api"},
+    {"key": "adminUsername", "value": "admin"},
+    {"key": "adminPassword", "value": ""},
+    {"key": "userUsername", "value": "student1"},
+    {"key": "userEmail", "value": "student1@example.com"},
+    {"key": "userPassword", "value": ""},
+    {"key": "adminAccessToken", "value": ""},
+    {"key": "adminRefreshToken", "value": ""},
+    {"key": "userAccessToken", "value": ""},
+    {"key": "usedRefreshToken", "value": ""}
+  ],
   "item": [
     {
-      "name": "1. Авторизация",
+      "name": "1. Пользователи и токены",
       "item": [
         {
           "name": "Регистрация USER",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"student1\",\n  \"email\": \"student1@itmo.ru\",\n  \"password\": \"Student123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
+            "url": "{{baseUrl}}/auth/register",
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"{{userUsername}}\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"},
+            "header": [{"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Создан или уже существует\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"]}}]
         },
         {
-          "name": "Регистрация: тот же username -> 409",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 409\", function () {",
-                  "    pm.response.to.have.status(409);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Неверные данные регистрации",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"student1\",\n  \"email\": \"other@itmo.ru\",\n  \"password\": \"Student123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "Регистрация: невалидные данные -> 422",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 422\", function () {",
-                  "    pm.response.to.have.status(422);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"a\",\n  \"email\": \"not-an-email\",\n  \"password\": \"123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
+            "url": "{{baseUrl}}/auth/register",
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"a\",\n  \"email\": \"not-an-email\",\n  \"password\": \"123\"\n}"},
+            "header": [{"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 422\", () => pm.response.to.have.status(422));"]}}]
         },
         {
           "name": "Вход ADMIN",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "const body = pm.response.json();",
-                  "pm.collectionVariables.set(\"adminAccessToken\", body.accessToken);",
-                  "pm.collectionVariables.set(\"adminRefreshToken\", body.refreshToken);",
-                  ""
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
+            "url": "{{baseUrl}}/auth/login",
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"},
+            "header": [{"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));", "const tokens = pm.response.json();", "pm.collectionVariables.set(\"adminAccessToken\", tokens.accessToken);", "pm.collectionVariables.set(\"adminRefreshToken\", tokens.refreshToken);"]}}]
         },
         {
           "name": "Вход USER",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "const body = pm.response.json();",
-                  "pm.collectionVariables.set(\"userAccessToken\", body.accessToken);",
-                  "pm.collectionVariables.set(\"userRefreshToken\", body.refreshToken);",
-                  ""
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"student1\",\n  \"password\": \"Student123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
+            "url": "{{baseUrl}}/auth/login",
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"{{userUsername}}\",\n  \"password\": \"{{userPassword}}\"\n}"},
+            "header": [{"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));", "const tokens = pm.response.json();", "pm.collectionVariables.set(\"userAccessToken\", tokens.accessToken);"]}}]
         },
         {
-          "name": "Вход с неверным паролем -> 401",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 401\", function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Обновление токенов ADMIN",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"student1\",\n  \"password\": \"WrongPass1\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
+            "url": "{{baseUrl}}/auth/refresh",
+            "body": {"mode": "raw", "raw": "{\n  \"refreshToken\": \"{{adminRefreshToken}}\"\n}"},
+            "header": [{"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "prerequest", "script": {"type": "text/javascript", "exec": ["pm.collectionVariables.set(\"usedRefreshToken\", pm.collectionVariables.get(\"adminRefreshToken\"));"]}}, {"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));", "const tokens = pm.response.json();", "pm.collectionVariables.set(\"adminAccessToken\", tokens.accessToken);", "pm.collectionVariables.set(\"adminRefreshToken\", tokens.refreshToken);"]}}]
         },
         {
-          "name": "Обновление токенов (refresh)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "const body = pm.response.json();",
-                  "pm.collectionVariables.set(\"adminAccessToken\", body.accessToken);",
-                  "pm.collectionVariables.set(\"adminRefreshToken\", body.refreshToken);",
-                  ""
-                ]
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// запоминаем старый refresh, чтобы потом показать, что он больше не работает",
-                  "pm.collectionVariables.set(\"usedRefreshToken\", pm.collectionVariables.get(\"adminRefreshToken\"));"
-                ]
-              }
-            }
-          ],
+          "name": "Старый refresh-токен: отказ",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/refresh",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "refresh"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"{{adminRefreshToken}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "Повторный refresh старым токеном -> 401",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 401\", function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/refresh",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "refresh"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"{{usedRefreshToken}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
+            "url": "{{baseUrl}}/auth/refresh",
+            "body": {"mode": "raw", "raw": "{\n  \"refreshToken\": \"{{usedRefreshToken}}\"\n}"},
+            "header": [{"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 401\", () => pm.response.to.have.status(401));"]}}]
         }
       ]
     },
@@ -417,1111 +82,153 @@
       "name": "2. Студенты (ADMIN)",
       "item": [
         {
-          "name": "Список (по умолчанию: 1 страница, 10 записей)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Неверные данные студента",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "method": "POST",
+            "url": "{{baseUrl}}/requests",
+            "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 42,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Проверка API\"\n}"},
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 422\", () => pm.response.to.have.status(422));"]}}]
         },
         {
-          "name": "Поиск + фильтр + сортировка + пагинация",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Некорректный JSON",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests?fullName=ов&hasDormitory=true&sort=isuId&order=desc&page=1&size=3",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ],
-              "query": [
-                {
-                  "key": "fullName",
-                  "value": "ов"
-                },
-                {
-                  "key": "hasDormitory",
-                  "value": "true"
-                },
-                {
-                  "key": "sort",
-                  "value": "isuId"
-                },
-                {
-                  "key": "order",
-                  "value": "desc"
-                },
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "size",
-                  "value": "3"
-                }
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "method": "POST",
+            "url": "{{baseUrl}}/requests",
+            "body": {"mode": "raw", "raw": "{\"fullName\":"},
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"]}}]
         },
         {
-          "name": "Фильтр по группе и общежитию",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Создать тестового студента",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests?group=P3211&dormitory=8",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ],
-              "query": [
-                {
-                  "key": "group",
-                  "value": "P3211"
-                },
-                {
-                  "key": "dormitory",
-                  "value": "8"
-                }
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "method": "POST",
+            "url": "{{baseUrl}}/requests",
+            "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 777777,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Проверка API\"\n}"},
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));"]}}]
         },
         {
-          "name": "Некорректные параметры -> 422",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 422\", function () {",
-                  "    pm.response.to.have.status(422);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Повторный ИСУ: отказ",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests?sort=age&size=500",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ],
-              "query": [
-                {
-                  "key": "sort",
-                  "value": "age"
-                },
-                {
-                  "key": "size",
-                  "value": "500"
-                }
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "method": "POST",
+            "url": "{{baseUrl}}/requests",
+            "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 777777,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Проверка API\"\n}"},
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 409\", () => pm.response.to.have.status(409));"]}}]
         },
         {
-          "name": "QUERY: параметры в теле",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Поиск, сортировка и пагинация",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/requests?fullName=Тестов&group=P3210&sort=isuId&order=desc&page=1&size=5",
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
+        },
+        {
+          "name": "Фильтрация через QUERY",
           "request": {
             "method": "QUERY",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"isForeign\": true,\n  \"sort\": \"fullName\",\n  \"order\": \"asc\",\n  \"page\": 1,\n  \"size\": 10\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests",
+            "body": {"mode": "raw", "raw": "{\n  \"group\": \"P3210\",\n  \"hasDormitory\": false\n}"},
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
         },
         {
-          "name": "Один студент",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Получить тестового студента",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests/111111",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "111111"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests/777777",
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
         },
         {
-          "name": "Создать студента",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Сидоров Сидор Сидорович\",\n  \"group\": \"P3214\",\n  \"isuId\": 777777,\n  \"dormitory\": 8,\n  \"room\": 101,\n  \"settlementPeriod\": \"2025-09-01\",\n  \"isForeign\": false,\n  \"notes\": \"Создан из Postman\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Создать дубликат ИСУ -> 409",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 409\", function () {",
-                  "    pm.response.to.have.status(409);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Сидоров Сидор Сидорович\",\n  \"group\": \"P3214\",\n  \"isuId\": 777777,\n  \"dormitory\": 8,\n  \"room\": 101,\n  \"settlementPeriod\": \"2025-09-01\",\n  \"isForeign\": false,\n  \"notes\": \"Создан из Postman\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Создать с невалидными полями -> 422",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 422\", function () {",
-                  "    pm.response.to.have.status(422);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Ivanov\",\n  \"group\": \"p32\",\n  \"isuId\": 12\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Неполные данные общежития -> 422",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 422\", function () {",
-                  "    pm.response.to.have.status(422);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Носов Николай\",\n  \"group\": \"P3214\",\n  \"isuId\": 777778,\n  \"dormitory\": 8\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Полная замена (PUT)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Полностью заменить данные",
           "request": {
             "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests/777777",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "777777"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Сидоров Сидор Сидорович\",\n  \"group\": \"P3214\",\n  \"isuId\": 777777,\n  \"dormitory\": 8,\n  \"room\": 202,\n  \"settlementPeriod\": \"2025-09-01\",\n  \"isForeign\": false,\n  \"notes\": \"Переселён (PUT)\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests/777777",
+            "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 777777,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Изменено через PUT\"\n}"},
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
         },
         {
-          "name": "Частичное изменение (PATCH)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Изменить заметку",
           "request": {
             "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests/777777",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "777777"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"notes\": \"Изменено через PATCH\",\n  \"isForeign\": true\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests/777777",
+            "body": {"mode": "raw", "raw": "{\n  \"notes\": \"Изменено через PATCH\"\n}"},
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
         },
         {
-          "name": "PATCH: выселить (обнулить общежитие)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests/777777",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "777777"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Удалить",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 204\", function () {",
-                  "    pm.response.to.have.status(204);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Удалить тестового студента",
           "request": {
             "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests/777777",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "777777"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests/777777",
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 204\", () => pm.response.to.have.status(204));"]}}]
         },
         {
-          "name": "Получить удалённого -> 404",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 404\", function () {",
-                  "    pm.response.to.have.status(404);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "После удаления студент не найден",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests/777777",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "777777"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests/777777",
+            "header": [{"key": "Authorization", "value": "Bearer {{adminAccessToken}}"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"]}}]
         }
       ]
     },
     {
-      "name": "3. Роли и доступ",
+      "name": "3. Проверка прав",
       "item": [
         {
-          "name": "USER: список -> 200",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "USER может читать",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{userAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests",
+            "header": [{"key": "Authorization", "value": "Bearer {{userAccessToken}}"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
         },
         {
-          "name": "USER: один студент -> 200",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "USER может получить одного студента",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests/222222",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "222222"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{userAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests/111111",
+            "header": [{"key": "Authorization", "value": "Bearer {{userAccessToken}}"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"]}}]
         },
         {
-          "name": "USER: создать -> 403",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 403\", function () {",
-                  "    pm.response.to.have.status(403);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "USER не может добавлять",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Сидоров Сидор Сидорович\",\n  \"group\": \"P3214\",\n  \"isuId\": 777777,\n  \"dormitory\": 8,\n  \"room\": 101,\n  \"settlementPeriod\": \"2025-09-01\",\n  \"isForeign\": false,\n  \"notes\": \"Создан из Postman\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{userAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            "url": "{{baseUrl}}/requests",
+            "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Тестов Тест\",\n  \"group\": \"P3210\",\n  \"isuId\": 777777,\n  \"dormitory\": null,\n  \"room\": null,\n  \"settlementPeriod\": null,\n  \"isForeign\": false,\n  \"notes\": \"Проверка API\"\n}"},
+            "header": [{"key": "Authorization", "value": "Bearer {{userAccessToken}}"}, {"key": "Content-Type", "value": "application/json"}]
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 403\", () => pm.response.to.have.status(403));"]}}]
         },
         {
-          "name": "USER: изменить -> 403",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 403\", function () {",
-                  "    pm.response.to.have.status(403);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests/222222",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "222222"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"notes\": \"взлом\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{userAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "USER: удалить -> 403",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 403\", function () {",
-                  "    pm.response.to.have.status(403);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests/222222",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests",
-                "222222"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{userAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Без токена -> 401",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 401\", function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
+          "name": "Без токена: отказ",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "С поддельным токеном -> 401",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Статус 401\", function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer abc.def.ghi"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/requests",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "requests"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
+            "url": "{{baseUrl}}/requests"
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"HTTP 401\", () => pm.response.to.have.status(401));"]}}]
         }
       ]
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:8080/api"
-    },
-    {
-      "key": "adminUsername",
-      "value": "admin"
-    },
-    {
-      "key": "adminPassword",
-      "value": "Admin12345"
-    },
-    {
-      "key": "adminAccessToken",
-      "value": ""
-    },
-    {
-      "key": "adminRefreshToken",
-      "value": ""
-    },
-    {
-      "key": "userAccessToken",
-      "value": ""
-    },
-    {
-      "key": "userRefreshToken",
-      "value": ""
-    },
-    {
-      "key": "usedRefreshToken",
-      "value": ""
     }
   ]
 }

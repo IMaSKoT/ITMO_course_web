@@ -58,7 +58,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <!-- чтобы в рефлексии были настоящие имена параметров -->
+
                     <parameters>true</parameters>
                 </configuration>
             </plugin>

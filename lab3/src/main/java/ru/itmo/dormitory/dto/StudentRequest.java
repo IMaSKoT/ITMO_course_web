@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Set;
 
-// тело POST и PUT, правила те же, что в StudentCreateDTO из 2 лабы
 public class StudentRequest {
 
     public static final String FULL_NAME_REGEX = "^[А-Яа-яЁё-]{2,43} [А-Яа-яЁё-]{2,45}(?: [А-Яа-яЁё]{2,45})?$";
@@ -20,7 +19,6 @@ public class StudentRequest {
     static final String DORMITORY_MESSAGE = "Номер общежития от 1 до 999";
     static final String ROOM_MESSAGE = "Номер комнаты от 1 до 9999";
 
-    // по этому списку PATCH отсекает неизвестные поля
     public static final Set<String> FIELDS = Set.of(
             "fullName", "group", "isuId", "dormitory", "room", "settlementPeriod", "isForeign", "notes");
 
@@ -46,7 +44,6 @@ public class StudentRequest {
     @Max(value = 9999, message = ROOM_MESSAGE)
     public Integer room;
 
-    // минимальную дату проверяет StudentService
     public LocalDate settlementPeriod;
 
     public boolean isForeign;
