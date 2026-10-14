@@ -2,7 +2,7 @@ package ru.itmo.dormitory.dto;
 
 import ru.itmo.dormitory.entity.User;
 
-/** данные пользователя для клиента, без хеша пароля */
+// данные пользователя для клиента, без хеша пароля
 public class UserResponse {
 
     public String username;
