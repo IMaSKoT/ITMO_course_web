@@ -14,15 +14,13 @@ import ru.itmo.dormitory.entity.Role;
 import ru.itmo.dormitory.error.ApiException;
 import ru.itmo.dormitory.service.JwtService;
 
-import java.lang.reflect.Method;
 import java.security.Principal;
-import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * фильтр, который выполняется ДО метода ресурса (до контроллера)
- * 1) аутентификация: достаём токен из "Authorization: Bearer ..." и проверяем его -> иначе 401
- * 2) авторизация: сверяем роль пользователя с @Secured(...) на методе -> иначе 403
+ * срабатывает перед методами с @Secured
+ * нет или битый токен: 401, роль не подходит: 403
  */
 @Secured
 @Provider
@@ -40,45 +38,33 @@ public class JwtAuthFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext request) {
-        // ---- 1) аутентификация: кто это? ----
         String header = request.getHeaderString(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith(BEARER_PREFIX)) {
             throw ApiException.unauthorized("AUTHENTICATION_REQUIRED",
                     "Нужен заголовок Authorization: Bearer <accessToken>");
         }
-        String token = header.substring(BEARER_PREFIX.length()).trim();
-        AuthenticatedUser user = jwtService.verifyAccessToken(token);
+        AuthenticatedUser user = jwtService.verifyAccessToken(header.substring(BEARER_PREFIX.length()).trim());
 
-        // ---- 2) авторизация: что ему можно? ----
-        Role[] allowedRoles = findAllowedRoles();
-        if (!Arrays.asList(allowedRoles).contains(user.getRole())) {
+        if (!allowedRoles().contains(user.getRole())) {
             LOG.warning("Access denied: user=" + user.getName() + " role=" + user.getRole()
                     + " " + request.getMethod() + " " + request.getUriInfo().getPath());
             throw ApiException.forbidden("Недостаточно прав для этой операции");
         }
 
-        // кладём пользователя в SecurityContext, его можно получить в ресурсе через @Context
-        request.setSecurityContext(new TokenSecurityContext(user, request.getSecurityContext().isSecure()));
+        boolean secure = request.getSecurityContext().isSecure();
+        request.setSecurityContext(new TokenSecurityContext(user, secure));
     }
 
-    /** аннотация на методе важнее аннотации на классе */
-    private Role[] findAllowedRoles() {
-        Method method = resourceInfo.getResourceMethod();
-        Secured secured = method.getAnnotation(Secured.class);
+    // аннотация на методе важнее аннотации на классе
+    private List<Role> allowedRoles() {
+        Secured secured = resourceInfo.getResourceMethod().getAnnotation(Secured.class);
         if (secured == null) {
             secured = resourceInfo.getResourceClass().getAnnotation(Secured.class);
         }
-        return secured.value();
+        return List.of(secured.value());
     }
 
-    private static class TokenSecurityContext implements SecurityContext {
-        private final AuthenticatedUser user;
-        private final boolean secure;
-
-        TokenSecurityContext(AuthenticatedUser user, boolean secure) {
-            this.user = user;
-            this.secure = secure;
-        }
+    private record TokenSecurityContext(AuthenticatedUser user, boolean secure) implements SecurityContext {
 
         @Override
         public Principal getUserPrincipal() {

@@ -13,11 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** слой доступа к данным: только работа с БД через JPA, никакой бизнес-логики */
 @ApplicationScoped
 public class StudentRepository {
 
-    // поле API -> поле сущности (защищает от подстановки чего попало в ORDER BY)
+    // в ORDER BY попадают только поля из этого списка
     private static final Map<String, String> SORT_FIELDS = Map.of(
             "fullName", "s.fullName",
             "group", "s.groupName",
@@ -31,11 +30,11 @@ public class StudentRepository {
     private EntityManager em;
 
     public Optional<Student> findByIsuId(int isuId) {
-        List<Student> result = em.createQuery(
-                        "select s from Student s where s.isuId = :isuId", Student.class)
+        return em.createQuery("select s from Student s where s.isuId = :isuId", Student.class)
                 .setParameter("isuId", isuId)
-                .getResultList();
-        return result.stream().findFirst();
+                .getResultList()
+                .stream()
+                .findFirst();
     }
 
     public boolean existsByIsuId(int isuId) {
@@ -54,24 +53,19 @@ public class StudentRepository {
         em.remove(student);
     }
 
-    /** одна страница студентов с учётом поиска, фильтров и сортировки */
     public List<Student> findPage(StudentFilter filter, LocalDate settlementDate) {
         Map<String, Object> params = new HashMap<>();
         String where = buildWhere(filter, settlementDate, params);
-
-        String orderBy = " order by " + SORT_FIELDS.get(filter.sort) + " " + filter.order
-                + ", s.id asc"; // второй ключ, чтобы порядок на страницах был стабильным
+        // s.id вторым ключом, чтобы порядок не менялся между страницами
+        String orderBy = " order by " + SORT_FIELDS.get(filter.sort) + " " + filter.order + ", s.id";
 
         TypedQuery<Student> query = em.createQuery("select s from Student s" + where + orderBy, Student.class);
         params.forEach(query::setParameter);
-
-        // пагинация: OFFSET / LIMIT
-        query.setFirstResult((filter.page - 1) * filter.size);
-        query.setMaxResults(filter.size);
-        return query.getResultList();
+        return query.setFirstResult((filter.page - 1) * filter.size)
+                .setMaxResults(filter.size)
+                .getResultList();
     }
 
-    /** сколько всего студентов подходит под фильтр (для totalItems / totalPages) */
     public long countFiltered(StudentFilter filter, LocalDate settlementDate) {
         Map<String, Object> params = new HashMap<>();
         String where = buildWhere(filter, settlementDate, params);
@@ -81,15 +75,11 @@ public class StudentRepository {
         return query.getSingleResult();
     }
 
-    /**
-     * собираем WHERE из тех фильтров, которые пришли
-     * значения передаются параметрами (:name), а не склейкой строк, это защита от SQL-инъекций
-     */
+    // значения идут через параметры запроса, а не склейкой строк, чтобы не было SQL-инъекций
     private String buildWhere(StudentFilter filter, LocalDate settlementDate, Map<String, Object> params) {
         StringBuilder where = new StringBuilder(" where 1 = 1");
 
         if (filter.fullName != null) {
-            // поиск по подстроке без учёта регистра
             where.append(" and lower(s.fullName) like :fullName");
             params.put("fullName", "%" + filter.fullName.trim().toLowerCase() + "%");
         }

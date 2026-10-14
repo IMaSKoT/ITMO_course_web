@@ -32,28 +32,24 @@ import ru.itmo.dormitory.service.StudentService;
 
 import java.util.logging.Logger;
 
-/**
- * HTTP-слой: принимает запрос, отдаёт ответ, вся логика в StudentService
- * путь /api/requests и идентификатор isuId сохранены из 2-й лабы
- *
- * читать (GET, QUERY) может любой вошедший пользователь, менять только ADMIN
- */
+// читать может любой вошедший пользователь, менять только ADMIN
 @Path("/requests")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Secured // по умолчанию: USER и ADMIN
+@Secured
 @Tag(name = "Students", description = "Работа со студентами общежития")
 @SecurityRequirement(name = "bearerAuth")
 public class StudentResource {
 
     private static final Logger LOG = Logger.getLogger(StudentResource.class.getName());
+    private static final String BODY_REQUIRED = "Тело запроса обязательно";
 
     @Inject
-    StudentService studentService;
+    private StudentService studentService;
 
     @Context
-    SecurityContext securityContext;
+    private SecurityContext securityContext;
 
     @GET
     @Operation(summary = "Список студентов: поиск по ФИО, фильтры, сортировка, пагинация")
@@ -61,11 +57,9 @@ public class StudentResource {
         return studentService.getStudents(filter);
     }
 
-    // то же, что GET-список, но параметры передаются в JSON-теле
     // без @Operation: в OpenAPI 3.0 нет метода QUERY, и генератор Payara падает на нём с NPE
     @QUERY
-    public PageResponse<StudentResponse> queryStudents(
-            @NotNull(message = "Тело запроса обязательно") @Valid StudentFilter filter) {
+    public PageResponse<StudentResponse> queryStudents(@NotNull(message = BODY_REQUIRED) @Valid StudentFilter filter) {
         return studentService.getStudents(filter);
     }
 
@@ -79,7 +73,7 @@ public class StudentResource {
     @POST
     @Secured(Role.ADMIN)
     @Operation(summary = "Создать студента (только ADMIN)")
-    public Response create(@NotNull(message = "Тело запроса обязательно") @Valid StudentRequest request) {
+    public Response create(@NotNull(message = BODY_REQUIRED) @Valid StudentRequest request) {
         LOG.info("POST student by " + currentUser());
         StudentResponse created = studentService.create(request);
         return Response.status(Response.Status.CREATED).entity(created).build();
@@ -90,7 +84,7 @@ public class StudentResource {
     @Secured(Role.ADMIN)
     @Operation(summary = "Полностью заменить данные студента (только ADMIN)")
     public StudentResponse replace(@PathParam("isuId") int isuId,
-                                   @NotNull(message = "Тело запроса обязательно") @Valid StudentRequest request) {
+                                   @NotNull(message = BODY_REQUIRED) @Valid StudentRequest request) {
         LOG.info("PUT student " + isuId + " by " + currentUser());
         return studentService.replace(isuId, request);
     }
@@ -98,9 +92,9 @@ public class StudentResource {
     @PATCH
     @Path("/{isuId}")
     @Secured(Role.ADMIN)
-    @Operation(summary = "Частично изменить студента — передаются только изменяемые поля (только ADMIN)")
+    @Operation(summary = "Изменить только переданные поля студента (только ADMIN)")
     public StudentResponse patch(@PathParam("isuId") int isuId,
-                                 @NotNull(message = "Тело запроса обязательно") JsonObject changes) {
+                                 @NotNull(message = BODY_REQUIRED) JsonObject changes) {
         LOG.info("PATCH student " + isuId + " by " + currentUser());
         return studentService.patch(isuId, changes);
     }

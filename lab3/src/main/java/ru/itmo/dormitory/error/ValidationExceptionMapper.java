@@ -12,7 +12,7 @@ import ru.itmo.dormitory.dto.ErrorResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-/** ошибки Bean Validation (@NotNull, @Pattern, ...) -> 422 со списком полей */
+// ошибки Bean Validation отдаём как 422 со списком полей
 @Provider
 public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 

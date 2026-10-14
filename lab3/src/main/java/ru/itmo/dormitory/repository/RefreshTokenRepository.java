@@ -10,14 +10,14 @@ import java.util.Optional;
 @ApplicationScoped
 public class RefreshTokenRepository {
 
+    private static final String FIND_BY_HASH =
+            "select t from RefreshToken t join fetch t.user where t.tokenHash = :hash";
+
     @PersistenceContext(unitName = "dormitoryPU")
     private EntityManager em;
 
     public Optional<RefreshToken> findByHash(String tokenHash) {
-        // join fetch: сразу подтягиваем пользователя одним запросом
-        return em.createQuery(
-                        "select t from RefreshToken t join fetch t.user where t.tokenHash = :hash",
-                        RefreshToken.class)
+        return em.createQuery(FIND_BY_HASH, RefreshToken.class)
                 .setParameter("hash", tokenHash)
                 .getResultList()
                 .stream()

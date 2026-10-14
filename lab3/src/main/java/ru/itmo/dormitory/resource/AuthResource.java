@@ -19,7 +19,6 @@ import ru.itmo.dormitory.dto.TokenResponse;
 import ru.itmo.dormitory.dto.UserResponse;
 import ru.itmo.dormitory.service.AuthService;
 
-/** регистрация, вход и обновление токена: открытые эндпоинты (без @Secured) */
 @Path("/auth")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,7 +29,7 @@ public class AuthResource {
     private static final String BODY_REQUIRED = "Тело запроса обязательно";
 
     @Inject
-    AuthService authService;
+    private AuthService authService;
 
     @POST
     @Path("/register")

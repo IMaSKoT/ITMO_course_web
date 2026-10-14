@@ -6,11 +6,7 @@ import jakarta.json.bind.JsonbConfig;
 import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Provider;
 
-/**
- * настройки JSON для всего API:
- *  - null-поля тоже попадают в ответ ("dormitory": null), как во 2-й лабе
- *  - неизвестные поля в теле запроса -> ошибка (аналог extra="forbid" в pydantic)
- */
+// null-поля пишем в ответ, на неизвестные поля в запросе отвечаем ошибкой (как extra="forbid" в pydantic)
 @Provider
 public class JsonbConfigProvider implements ContextResolver<Jsonb> {
 

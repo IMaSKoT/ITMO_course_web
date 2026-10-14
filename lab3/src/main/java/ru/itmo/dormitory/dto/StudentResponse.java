@@ -4,11 +4,7 @@ import ru.itmo.dormitory.entity.Student;
 
 import java.time.LocalDate;
 
-/**
- * то, что API отдаёт клиенту
- * внутренний id из БД наружу не показываем:
- * студент, как и во 2-й лабе, определяется номером ИСУ
- */
+// id из БД наружу не отдаём, студента определяет номер ИСУ
 public class StudentResponse {
 
     public String fullName;

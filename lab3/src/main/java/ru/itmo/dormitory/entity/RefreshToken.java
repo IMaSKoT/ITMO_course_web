@@ -12,13 +12,7 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * refresh-токен
- * сам токен это случайная строка, которую получает клиент,
- * а в БД хранится только её SHA-256 хеш
- * связь многие-к-одному: у одного пользователя может быть несколько токенов
- * (например, вошёл с телефона и с ноутбука)
- */
+// у пользователя может быть несколько активных токенов, например с телефона и с ноутбука
 @Entity
 @Table(name = "refresh_tokens")
 public class RefreshToken {
@@ -30,7 +24,6 @@ public class RefreshToken {
     @Column(name = "token_hash", nullable = false, unique = true, length = 64)
     private String tokenHash;
 
-    // внешний ключ refresh_tokens.user_id -> users.id
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -41,14 +34,13 @@ public class RefreshToken {
     @Column(nullable = false)
     private boolean revoked;
 
-    public RefreshToken() {
+    protected RefreshToken() {
     }
 
     public RefreshToken(String tokenHash, User user, LocalDateTime expiresAt) {
         this.tokenHash = tokenHash;
         this.user = user;
         this.expiresAt = expiresAt;
-        this.revoked = false;
     }
 
     public boolean isActive() {
@@ -56,26 +48,10 @@ public class RefreshToken {
     }
 
     public void revoke() {
-        this.revoked = true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTokenHash() {
-        return tokenHash;
+        revoked = true;
     }
 
     public User getUser() {
         return user;
-    }
-
-    public LocalDateTime getExpiresAt() {
-        return expiresAt;
-    }
-
-    public boolean isRevoked() {
-        return revoked;
     }
 }

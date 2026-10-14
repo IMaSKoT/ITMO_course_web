@@ -4,7 +4,6 @@ import ru.itmo.dormitory.entity.Role;
 
 import java.security.Principal;
 
-/** кто делает запрос, достаём из проверенного access-токена */
 public class AuthenticatedUser implements Principal {
 
     private final String username;

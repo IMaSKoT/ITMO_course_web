@@ -8,42 +8,36 @@ import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.QueryParam;
 
-/**
- * параметры поиска, фильтрации, сортировки и пагинации
- * для GET приходят из query-параметров (@QueryParam),
- * для метода QUERY из JSON-тела (те же имена полей)
- */
+// для GET приходит из query-параметров, для QUERY из JSON-тела с теми же именами полей
 public class StudentFilter {
 
-    // ---- поиск ----
     @QueryParam("fullName")
     @Size(min = 1, max = 135, message = "Строка поиска от 1 до 135 символов")
     public String fullName;
 
-    // ---- фильтры ----
     @QueryParam("group")
-    @Pattern(regexp = StudentRequest.GROUP_REGEX, message = "Группа должна быть в формате P3210")
+    @Pattern(regexp = StudentRequest.GROUP_REGEX, message = StudentRequest.GROUP_MESSAGE)
     public String group;
 
     @QueryParam("isuId")
-    @Min(value = 100000, message = "Номер ИСУ — шестизначное число")
-    @Max(value = 999999, message = "Номер ИСУ — шестизначное число")
+    @Min(value = 100000, message = StudentRequest.ISU_MESSAGE)
+    @Max(value = 999999, message = StudentRequest.ISU_MESSAGE)
     public Integer isuId;
 
     @QueryParam("hasDormitory")
     public Boolean hasDormitory;
 
     @QueryParam("dormitory")
-    @Min(value = 1, message = "Номер общежития от 1 до 999")
-    @Max(value = 999, message = "Номер общежития от 1 до 999")
+    @Min(value = 1, message = StudentRequest.DORMITORY_MESSAGE)
+    @Max(value = 999, message = StudentRequest.DORMITORY_MESSAGE)
     public Integer dormitory;
 
     @QueryParam("room")
-    @Min(value = 1, message = "Номер комнаты от 1 до 9999")
-    @Max(value = 9999, message = "Номер комнаты от 1 до 9999")
+    @Min(value = 1, message = StudentRequest.ROOM_MESSAGE)
+    @Max(value = 9999, message = StudentRequest.ROOM_MESSAGE)
     public Integer room;
 
-    // строкой, так как JAX-RS не умеет сам превращать query-параметр в LocalDate
+    // строкой, потому что JAX-RS не умеет сам разбирать LocalDate из query-параметра
     @QueryParam("settlementPeriod")
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Дата в формате ГГГГ-ММ-ДД")
     public String settlementPeriod;
@@ -51,7 +45,6 @@ public class StudentFilter {
     @QueryParam("isForeign")
     public Boolean isForeign;
 
-    // ---- сортировка ----
     @QueryParam("sort")
     @NotNull(message = "Поле sort не может быть null")
     @DefaultValue("fullName")
@@ -65,7 +58,6 @@ public class StudentFilter {
     @Pattern(regexp = "asc|desc", message = "Порядок сортировки: asc или desc")
     public String order = "asc";
 
-    // ---- пагинация ----
     @QueryParam("page")
     @NotNull(message = "Поле page не может быть null")
     @DefaultValue("1")

@@ -22,25 +22,21 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-/**
- * создание и проверка access-токенов (JWT, подпись HS256 общим секретом)
- * сами криптографические операции делает библиотека Nimbus JOSE + JWT
- */
+// access-токены: JWT с подписью HS256
 @ApplicationScoped
 public class JwtService {
 
-    // значения берутся из переменных окружения JWT_SECRET, JWT_ISSUER, JWT_ACCESS_TTL_MINUTES
     @Inject
     @ConfigProperty(name = "jwt.secret")
-    String secret;
+    private String secret;
 
     @Inject
     @ConfigProperty(name = "jwt.issuer", defaultValue = "dormitory-app")
-    String issuer;
+    private String issuer;
 
     @Inject
     @ConfigProperty(name = "jwt.access-ttl-minutes", defaultValue = "15")
-    long accessTtlMinutes;
+    private long accessTtlMinutes;
 
     private byte[] secretBytes;
 
@@ -74,23 +70,17 @@ public class JwtService {
         }
     }
 
-    /** проверяет токен и возвращает пользователя, любая проблема -> 401 */
     public AuthenticatedUser verifyAccessToken(String token) {
         try {
             SignedJWT jwt = SignedJWT.parse(token);
-
-            // алгоритм задаёт сервер, а не заголовок токена (защита от alg=none)
-            if (!JWSAlgorithm.HS256.equals(jwt.getHeader().getAlgorithm())) {
-                throw invalidToken();
-            }
-            // подпись: без неё кто угодно мог бы вписать себе role=ADMIN
-            if (!jwt.verify(new MACVerifier(secretBytes))) {
-                throw invalidToken();
-            }
-
+            // алгоритм проверяем сами, а не берём из заголовка токена, иначе пролезет alg=none
+            boolean validSignature = JWSAlgorithm.HS256.equals(jwt.getHeader().getAlgorithm())
+                    && jwt.verify(new MACVerifier(secretBytes));
             JWTClaimsSet claims = jwt.getJWTClaimsSet();
-            // токен выдал наш сервер
-            if (!issuer.equals(claims.getIssuer())) {
+            String username = claims.getSubject();
+            String role = claims.getStringClaim("role");
+
+            if (!validSignature || !issuer.equals(claims.getIssuer()) || username == null || role == null) {
                 throw invalidToken();
             }
             Date expiration = claims.getExpirationTime();
@@ -98,11 +88,8 @@ public class JwtService {
                 throw ApiException.unauthorized("TOKEN_EXPIRED",
                         "Срок действия access-токена истёк, обновите его через /api/auth/refresh");
             }
-
-            String username = claims.getSubject();
-            Role role = Role.valueOf(claims.getStringClaim("role"));
-            return new AuthenticatedUser(username, role);
-        } catch (ParseException | JOSEException | IllegalArgumentException | NullPointerException e) {
+            return new AuthenticatedUser(username, Role.valueOf(role));
+        } catch (ParseException | JOSEException | IllegalArgumentException e) {
             throw invalidToken();
         }
     }

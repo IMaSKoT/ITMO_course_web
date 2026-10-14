@@ -7,10 +7,6 @@ import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 
-/**
- * точка входа JAX-RS: все ресурсы будут доступны по префиксу /api
- * ресурсы, фильтры и обработчики ошибок (@Path, @Provider) сервер находит сам
- */
 @ApplicationPath("/api")
 @OpenAPIDefinition(info = @Info(
         title = "Dormitory API",

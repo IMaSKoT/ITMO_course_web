@@ -15,11 +15,7 @@ import ru.itmo.dormitory.dto.ErrorResponse;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * все остальные исключения: битый JSON, несуществующий путь, неверный метод
- * и непредвиденные ошибки сервера (500)
- * ответ отдаётся в том же едином формате
- */
+// всё, что не поймали другие мапперы: битый JSON, ошибки JAX-RS и непредвиденные 500
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
@@ -45,7 +41,6 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
                 return build(status, "BAD_REQUEST", "Некорректный запрос");
             }
         }
-        // всё неожиданное логируем со стектрейсом, а клиенту не показываем детали
         LOG.log(Level.SEVERE, "Unexpected error", e);
         return build(500, "INTERNAL_ERROR", "Внутренняя ошибка сервера");
     }

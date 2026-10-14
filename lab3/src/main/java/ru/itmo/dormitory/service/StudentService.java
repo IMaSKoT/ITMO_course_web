@@ -26,30 +26,28 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-/** бизнес-логика работы со студентами (перенесена из service.py 2-й лабы) */
 @ApplicationScoped
 public class StudentService {
 
     private static final Logger LOG = Logger.getLogger(StudentService.class.getName());
-    private static final LocalDate MIN_SETTLEMENT_DATE = LocalDate.of(2000, 1, 1);
     private static final Jsonb JSONB = JsonbBuilder.create();
 
-    @Inject
-    StudentRepository repository;
+    private static final LocalDate MIN_SETTLEMENT_DATE = LocalDate.of(2000, 1, 1);
+    private static final String TOO_EARLY_DATE = "Дата заселения не может быть раньше 2000-01-01";
 
     @Inject
-    Validator validator;
+    private StudentRepository repository;
+
+    @Inject
+    private Validator validator;
 
     @Transactional
     public PageResponse<StudentResponse> getStudents(StudentFilter filter) {
         LocalDate settlementDate = parseDate(filter.settlementPeriod);
-
-        List<StudentResponse> items = repository.findPage(filter, settlementDate)
-                .stream()
+        List<StudentResponse> items = repository.findPage(filter, settlementDate).stream()
                 .map(StudentResponse::from)
                 .toList();
         long total = repository.countFiltered(filter, settlementDate);
-
         return new PageResponse<>(items, filter.page, filter.size, total);
     }
 
@@ -60,7 +58,7 @@ public class StudentService {
 
     @Transactional
     public StudentResponse create(StudentRequest request) {
-        validateBusinessRules(request);
+        checkDormitoryData(request);
         if (repository.existsByIsuId(request.isuId)) {
             throw duplicateIsu(request.isuId);
         }
@@ -73,39 +71,31 @@ public class StudentService {
         return StudentResponse.from(student);
     }
 
-    /** PUT: полная замена всех полей */
     @Transactional
     public StudentResponse replace(int isuId, StudentRequest request) {
         Student student = findOrThrow(isuId);
-        validateBusinessRules(request);
-        // если меняют номер ИСУ, новый не должен быть занят
-        if (!request.isuId.equals(isuId) && repository.existsByIsuId(request.isuId)) {
+        checkDormitoryData(request);
+        if (request.isuId != isuId && repository.existsByIsuId(request.isuId)) {
             throw duplicateIsu(request.isuId);
         }
 
+        // save() не нужен: изменения управляемой сущности уйдут в БД при коммите
         copyToEntity(request, student);
-        // save() не нужен: сущность управляемая, изменения уйдут в БД при коммите (dirty checking)
 
         LOG.info("Updated student isuId=" + isuId);
         return StudentResponse.from(student);
     }
 
-    /**
-     * PATCH: частичное изменение
-     * как во 2-й лабе: берём текущие данные,
-     * накладываем на них пришедшие поля (JSON Merge Patch, RFC 7396)
-     * и проверяем результат целиком теми же правилами, что и при создании
-     */
+    // JSON Merge Patch: накладываем изменения на текущие данные и проверяем результат как при PUT
     @Transactional
     public StudentResponse patch(int isuId, JsonObject changes) {
-        for (String key : changes.keySet()) {
-            if (!StudentRequest.FIELDS.contains(key)) {
-                throw ApiException.unprocessable("UNKNOWN_FIELD", "Неизвестное поле: " + key);
+        for (String field : changes.keySet()) {
+            if (!StudentRequest.FIELDS.contains(field)) {
+                throw ApiException.unprocessable("UNKNOWN_FIELD", "Неизвестное поле: " + field);
             }
         }
 
-        Student student = findOrThrow(isuId);
-        JsonObject current = toJsonObject(StudentResponse.from(student));
+        JsonObject current = toJson(StudentResponse.from(findOrThrow(isuId)));
         JsonValue merged = Json.createMergePatch(changes).apply(current);
         StudentRequest request = JSONB.fromJson(merged.toString(), StudentRequest.class);
 
@@ -122,7 +112,6 @@ public class StudentService {
         LOG.info("Deleted student isuId=" + isuId);
     }
 
-    /** заполняет пустую таблицу начальными данными (вызывается из DataInitializer) */
     @Transactional
     public void importIfEmpty(List<StudentRequest> students) {
         if (repository.count() > 0) {
@@ -136,28 +125,21 @@ public class StudentService {
         LOG.info("Imported " + students.size() + " students from seed file");
     }
 
-    // ---------------- вспомогательные методы ----------------
-
     private Student findOrThrow(int isuId) {
-        return repository.findByIsuId(isuId)
-                .orElseThrow(() -> ApiException.notFound("STUDENT_NOT_FOUND",
-                        "Студент с ИСУ " + isuId + " не найден"));
+        return repository.findByIsuId(isuId).orElseThrow(() ->
+                ApiException.notFound("STUDENT_NOT_FOUND", "Студент с ИСУ " + isuId + " не найден"));
     }
 
-    /** проверки, которые не выразить аннотациями на одном поле */
-    private void validateBusinessRules(StudentRequest request) {
-        // общежитие, комната и дата заселения заполняются либо все, либо никакие
-        int filled = 0;
-        if (request.dormitory != null) filled++;
-        if (request.room != null) filled++;
-        if (request.settlementPeriod != null) filled++;
-        if (filled != 0 && filled != 3) {
+    // общежитие, комната и дата заселения заполняются либо все вместе, либо никакие
+    private void checkDormitoryData(StudentRequest request) {
+        boolean allSet = request.dormitory != null && request.room != null && request.settlementPeriod != null;
+        boolean noneSet = request.dormitory == null && request.room == null && request.settlementPeriod == null;
+        if (!allSet && !noneSet) {
             throw ApiException.unprocessable("INVALID_DORMITORY_DATA",
                     "Данные об общежитии должны быть заполнены полностью");
         }
-        if (request.settlementPeriod != null && request.settlementPeriod.isBefore(MIN_SETTLEMENT_DATE)) {
-            throw ApiException.unprocessable("INVALID_DORMITORY_DATA",
-                    "Дата заселения не может быть раньше 2000-01-01");
+        if (allSet && request.settlementPeriod.isBefore(MIN_SETTLEMENT_DATE)) {
+            throw ApiException.unprocessable("INVALID_DORMITORY_DATA", TOO_EARLY_DATE);
         }
     }
 
@@ -183,12 +165,12 @@ public class StudentService {
             throw ApiException.unprocessable("VALIDATION_ERROR", "Некорректная дата: " + value);
         }
         if (date.isBefore(MIN_SETTLEMENT_DATE)) {
-            throw ApiException.unprocessable("VALIDATION_ERROR", "Дата заселения не может быть раньше 2000-01-01");
+            throw ApiException.unprocessable("VALIDATION_ERROR", TOO_EARLY_DATE);
         }
         return date;
     }
 
-    private JsonObject toJsonObject(Object dto) {
+    private JsonObject toJson(Object dto) {
         return Json.createReader(new StringReader(JSONB.toJson(dto))).readObject();
     }
 

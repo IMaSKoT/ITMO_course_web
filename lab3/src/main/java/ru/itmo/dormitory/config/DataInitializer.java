@@ -13,20 +13,12 @@ import ru.itmo.dormitory.service.AuthService;
 import ru.itmo.dormitory.service.StudentService;
 
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * 1) описывает подключение к БД (DataSource)
- *    адрес, логин и пароль берутся из переменных окружения через ${ENV=...},
- *    эту подстановку делает Payara
- * 2) при старте приложения создаёт администратора и заполняет таблицу студентов,
- *    если она пустая
- *    делаем это в событии @Initialized(ApplicationScoped.class), а не в @PostConstruct:
- *    к этому моменту все бины готовы и @Transactional работает
- */
+// ${ENV=...} Payara подставляет из переменных окружения
 @DataSourceDefinition(
         name = "java:app/jdbc/dormitory",
         className = "org.postgresql.ds.PGSimpleDataSource",
@@ -40,36 +32,44 @@ public class DataInitializer {
     private static final Logger LOG = Logger.getLogger(DataInitializer.class.getName());
 
     @Inject
-    AuthService authService;
+    private AuthService authService;
 
     @Inject
-    StudentService studentService;
+    private StudentService studentService;
 
     @Inject
     @ConfigProperty(name = "admin.username", defaultValue = "admin")
-    String adminUsername;
+    private String adminUsername;
 
     @Inject
     @ConfigProperty(name = "admin.email", defaultValue = "admin@itmo.ru")
-    String adminEmail;
+    private String adminEmail;
 
     @Inject
     @ConfigProperty(name = "admin.password")
-    Optional<String> adminPassword;
+    private Optional<String> adminPassword;
 
-    void init(@Observes @Initialized(ApplicationScoped.class) Object event) {
-        if (adminPassword.isPresent()) {
-            authService.createAdminIfMissing(adminUsername, adminEmail, adminPassword.get());
-        } else {
-            LOG.warning("ADMIN_PASSWORD не задан — администратор не будет создан");
+    // старт приложения, в отличие от @PostConstruct здесь уже работает @Transactional
+    void onStart(@Observes @Initialized(ApplicationScoped.class) Object event) {
+        createAdmin();
+        importStudents();
+    }
+
+    private void createAdmin() {
+        if (adminPassword.isEmpty()) {
+            LOG.warning("ADMIN_PASSWORD is not set, admin user will not be created");
+            return;
         }
+        authService.createAdminIfMissing(adminUsername, adminEmail, adminPassword.get());
+    }
 
-        try (InputStream in = getClass().getResourceAsStream("/seed/students.json")) {
-            Jsonb jsonb = JsonbBuilder.create();
+    private void importStudents() {
+        try (Jsonb jsonb = JsonbBuilder.create();
+             InputStream in = getClass().getResourceAsStream("/seed/students.json")) {
             StudentRequest[] students = jsonb.fromJson(in, StudentRequest[].class);
-            studentService.importIfEmpty(Arrays.asList(students));
+            studentService.importIfEmpty(List.of(students));
         } catch (Exception e) {
-            LOG.log(Level.WARNING, "Не удалось загрузить начальных студентов", e);
+            LOG.log(Level.WARNING, "Failed to import seed students", e);
         }
     }
 }

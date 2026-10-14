@@ -1,9 +1,6 @@
 package ru.itmo.dormitory.error;
 
-/**
- * наша "бизнесовая" ошибка: HTTP-статус + код + сообщение
- * бросается из сервисов и фильтра, превращается в JSON в ApiExceptionMapper
- */
+// ошибка с HTTP-статусом и кодом, в JSON её превращает ApiExceptionMapper
 public class ApiException extends RuntimeException {
 
     private final int status;
@@ -15,15 +12,13 @@ public class ApiException extends RuntimeException {
         this.code = code;
     }
 
-    public int getStatus() {
-        return status;
+    public static ApiException unauthorized(String code, String message) {
+        return new ApiException(401, code, message);
     }
 
-    public String getCode() {
-        return code;
+    public static ApiException forbidden(String message) {
+        return new ApiException(403, "ACCESS_DENIED", message);
     }
-
-    // ---- короткие "фабрики" для частых случаев ----
 
     public static ApiException notFound(String code, String message) {
         return new ApiException(404, code, message);
@@ -37,11 +32,11 @@ public class ApiException extends RuntimeException {
         return new ApiException(422, code, message);
     }
 
-    public static ApiException unauthorized(String code, String message) {
-        return new ApiException(401, code, message);
+    public int getStatus() {
+        return status;
     }
 
-    public static ApiException forbidden(String message) {
-        return new ApiException(403, "ACCESS_DENIED", message);
+    public String getCode() {
+        return code;
     }
 }

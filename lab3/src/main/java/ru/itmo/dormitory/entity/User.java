@@ -9,8 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+// user зарезервировано в PostgreSQL, поэтому users
 @Entity
-// "user" это зарезервированное слово в PostgreSQL, поэтому таблица "users"
 @Table(name = "users")
 public class User {
 
@@ -24,16 +24,14 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    // храним только хеш BCrypt, сам пароль никогда не храним
     @Column(name = "password_hash", nullable = false, length = 60)
     private String passwordHash;
 
-    // STRING, а не ORDINAL: в БД лежит "ADMIN", а не номер константы
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
     private Role role;
 
-    public User() {
+    protected User() {
     }
 
     public User(String username, String email, String passwordHash, Role role) {
@@ -41,10 +39,6 @@ public class User {
         this.email = email;
         this.passwordHash = passwordHash;
         this.role = role;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getUsername() {

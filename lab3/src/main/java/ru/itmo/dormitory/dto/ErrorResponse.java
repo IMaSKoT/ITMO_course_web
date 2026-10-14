@@ -2,10 +2,7 @@ package ru.itmo.dormitory.dto;
 
 import java.util.List;
 
-/**
- * единый формат ошибки (такой же, как во 2-й лабе):
- * { "error": { "code": "...", "message": "...", "details": [...] } }
- */
+// { "error": { "code": "...", "message": "...", "details": [...] } }
 public class ErrorResponse {
 
     public ErrorBody error;

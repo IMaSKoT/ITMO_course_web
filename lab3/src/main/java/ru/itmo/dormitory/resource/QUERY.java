@@ -7,10 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * HTTP-метод QUERY (как во 2-й лабе): поиск с параметрами в JSON-теле
- * в JAX-RS любой свой метод объявляется аннотацией с @HttpMethod
- */
+// нестандартный HTTP-метод QUERY: поиск с параметрами в теле запроса
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @HttpMethod("QUERY")

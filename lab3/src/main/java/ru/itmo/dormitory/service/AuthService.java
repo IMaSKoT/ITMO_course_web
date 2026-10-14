@@ -25,34 +25,31 @@ import java.util.Base64;
 import java.util.HexFormat;
 import java.util.logging.Logger;
 
-/** регистрация, вход, обновление токенов */
 @ApplicationScoped
 public class AuthService {
 
     private static final Logger LOG = Logger.getLogger(AuthService.class.getName());
     private static final SecureRandom RANDOM = new SecureRandom();
-    // "стоимость" BCrypt: каждая единица удваивает время хеширования
     private static final int BCRYPT_COST = 12;
 
     @Inject
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Inject
-    RefreshTokenRepository refreshTokenRepository;
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Inject
-    JwtService jwtService;
+    private JwtService jwtService;
 
     @Inject
     @ConfigProperty(name = "jwt.refresh-ttl-days", defaultValue = "7")
-    long refreshTtlDays;
+    private long refreshTtlDays;
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
         String username = request.username.trim();
         String email = request.email.trim().toLowerCase();
 
-        // уникальность проверяем до вставки, чтобы вернуть понятную ошибку 409
         if (userRepository.existsByUsername(username)) {
             throw ApiException.conflict("USERNAME_TAKEN", "Имя пользователя " + username + " уже занято");
         }
@@ -60,10 +57,7 @@ public class AuthService {
             throw ApiException.conflict("EMAIL_TAKEN", "Email " + email + " уже зарегистрирован");
         }
 
-        // BCrypt сам генерирует соль и хранит её внутри строки хеша
-        String hash = BCrypt.hashpw(request.password, BCrypt.gensalt(BCRYPT_COST));
-        // при регистрации все получают роль USER, ADMIN создаётся при старте приложения
-        User user = new User(username, email, hash, Role.USER);
+        User user = new User(username, email, hashPassword(request.password), Role.USER);
         userRepository.save(user);
 
         LOG.info("Registered new user: " + username);
@@ -74,8 +68,8 @@ public class AuthService {
     public TokenResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.username.trim()).orElse(null);
 
-        // одна и та же ошибка для "нет пользователя" и "неверный пароль",
-        // чтобы нельзя было узнать, какие логины существуют
+        // одна ошибка на "нет такого пользователя" и "неверный пароль",
+        // чтобы по ответу нельзя было подобрать существующие логины
         if (user == null || !BCrypt.checkpw(request.password, user.getPasswordHash())) {
             LOG.warning("Failed login attempt for username: " + request.username);
             throw ApiException.unauthorized("INVALID_CREDENTIALS", "Неверное имя пользователя или пароль");
@@ -85,49 +79,48 @@ public class AuthService {
         return issueTokens(user);
     }
 
-    /** новая пара токенов по refresh-токену, без повторного ввода логина и пароля */
     @Transactional
     public TokenResponse refresh(String refreshToken) {
         RefreshToken stored = refreshTokenRepository.findByHash(sha256(refreshToken))
-                .orElseThrow(this::invalidRefresh);
-        if (!stored.isActive()) {
-            throw invalidRefresh();
-        }
+                .filter(RefreshToken::isActive)
+                .orElseThrow(() -> ApiException.unauthorized("INVALID_REFRESH_TOKEN",
+                        "Refresh-токен недействителен или истёк, войдите заново"));
 
-        // ротация: старый refresh-токен больше не действует, выдаём новую пару
+        // старый refresh-токен одноразовый, взамен выдаём новую пару
         stored.revoke();
         LOG.info("Tokens refreshed for user: " + stored.getUser().getUsername());
         return issueTokens(stored.getUser());
     }
 
-    /** создаёт администратора при первом запуске (вызывается из DataInitializer) */
     @Transactional
     public void createAdminIfMissing(String username, String email, String password) {
         if (userRepository.existsByUsername(username)) {
             return;
         }
-        String hash = BCrypt.hashpw(password, BCrypt.gensalt(BCRYPT_COST));
-        userRepository.save(new User(username, email.toLowerCase(), hash, Role.ADMIN));
+        userRepository.save(new User(username, email.toLowerCase(), hashPassword(password), Role.ADMIN));
         LOG.info("Created admin user: " + username);
     }
 
     private TokenResponse issueTokens(User user) {
         String accessToken = jwtService.createAccessToken(user);
+        String refreshToken = generateRefreshToken();
 
-        // refresh-токен это просто случайная строка, в БД кладём её хеш
-        byte[] randomBytes = new byte[32];
-        RANDOM.nextBytes(randomBytes);
-        String refreshToken = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
-
+        // в БД лежит только хеш refresh-токена, сам токен знает только клиент
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(refreshTtlDays);
         refreshTokenRepository.save(new RefreshToken(sha256(refreshToken), user, expiresAt));
 
-        return new TokenResponse(accessToken, refreshToken, jwtService.getAccessTtlSeconds(), UserResponse.from(user));
+        return new TokenResponse(accessToken, refreshToken, jwtService.getAccessTtlSeconds(),
+                UserResponse.from(user));
     }
 
-    private ApiException invalidRefresh() {
-        return ApiException.unauthorized("INVALID_REFRESH_TOKEN",
-                "Refresh-токен недействителен или истёк, войдите заново");
+    private static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt(BCRYPT_COST));
+    }
+
+    private static String generateRefreshToken() {
+        byte[] bytes = new byte[32];
+        RANDOM.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     private static String sha256(String value) {

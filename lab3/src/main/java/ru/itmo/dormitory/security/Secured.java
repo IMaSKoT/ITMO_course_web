@@ -9,14 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * своя аннотация "эндпоинт защищён"
- * сама по себе ничего не делает, это просто метка
- * её читает JwtAuthFilter через рефлексию
- *
- * @Secured:             нужен любой вошедший пользователь (USER или ADMIN)
- * @Secured(Role.ADMIN): только ADMIN
- *
- * @NameBinding означает: JwtAuthFilter срабатывает только на методах/классах с этой аннотацией
+ * на помеченных эндпоинтах срабатывает JwtAuthFilter
+ * без параметров пускает любого вошедшего пользователя, @Secured(Role.ADMIN) только админа
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

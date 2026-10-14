@@ -20,7 +20,7 @@ public class Student {
     @Column(name = "full_name", nullable = false, length = 135)
     private String fullName;
 
-    // "group" это зарезервированное слово в SQL и JPQL, поэтому поле называется иначе
+    // group зарезервировано в SQL, поэтому groupName
     @Column(name = "study_group", nullable = false, length = 5)
     private String groupName;
 
@@ -41,14 +41,6 @@ public class Student {
 
     @Column(name = "notes", length = 1000)
     private String notes;
-
-    public Student() {
-        // пустой конструктор нужен JPA
-    }
-
-    public Long getId() {
-        return id;
-    }
 
     public String getFullName() {
         return fullName;
@@ -102,8 +94,8 @@ public class Student {
         return isForeign;
     }
 
-    public void setForeign(boolean foreign) {
-        isForeign = foreign;
+    public void setForeign(boolean isForeign) {
+        this.isForeign = isForeign;
     }
 
     public String getNotes() {
