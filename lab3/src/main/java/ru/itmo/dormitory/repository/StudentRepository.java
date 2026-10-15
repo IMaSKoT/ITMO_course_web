@@ -16,15 +16,6 @@ import java.util.Optional;
 @ApplicationScoped
 public class StudentRepository {
 
-    private static final Map<String, String> SORT_FIELDS = Map.of(
-            "fullName", "s.fullName",
-            "group", "s.groupName",
-            "isuId", "s.isuId",
-            "dormitory", "s.dormitory",
-            "room", "s.room",
-            "settlementPeriod", "s.settlementPeriod"
-    );
-
     @PersistenceContext(unitName = "dormitoryPU")
     private EntityManager em;
 
@@ -56,7 +47,7 @@ public class StudentRepository {
         Map<String, Object> params = new HashMap<>();
         String where = buildWhere(filter, settlementDate, params);
 
-        String orderBy = " order by " + SORT_FIELDS.get(filter.sort) + " " + filter.order + ", s.id";
+        String orderBy = " order by " + filter.sort.column() + " " + filter.order.name() + ", s.id";
 
         TypedQuery<Student> query = em.createQuery("select s from Student s" + where + orderBy, Student.class);
         params.forEach(query::setParameter);

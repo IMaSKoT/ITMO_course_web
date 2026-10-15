@@ -15,6 +15,7 @@ public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "bigserial")
     private Long id;
 
     @Column(name = "full_name", nullable = false, length = 135)

@@ -3,8 +3,10 @@ package ru.itmo.dormitory.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import ru.itmo.dormitory.validation.SettlementDate;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -44,6 +46,8 @@ public class StudentRequest {
     @Max(value = 9999, message = ROOM_MESSAGE)
     public Integer room;
 
+    @SettlementDate
+    @PastOrPresent(message = "Дата заселения не может быть в будущем")
     public LocalDate settlementPeriod;
 
     public boolean isForeign;

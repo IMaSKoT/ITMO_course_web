@@ -18,6 +18,7 @@ public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "bigserial")
     private Long id;
 
     @Column(name = "token_hash", nullable = false, unique = true, length = 64)

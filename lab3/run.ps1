@@ -10,7 +10,7 @@ Get-Content .env | Where-Object { $_ -match '^\s*[^#\s].*=' } | ForEach-Object {
     [Environment]::SetEnvironmentVariable($name.Trim(), $value.Trim(), 'Process')
 }
 
-foreach ($name in 'DB_URL', 'DB_USER', 'DB_PASSWORD', 'JWT_SECRET', 'ADMIN_PASSWORD') {
+foreach ($name in 'DB_URL', 'DB_USER', 'DB_PASSWORD', 'JWT_SECRET', 'ADMIN_USERNAME', 'ADMIN_EMAIL', 'ADMIN_PASSWORD') {
     if (![Environment]::GetEnvironmentVariable($name, 'Process')) {
         throw "Missing value in .env: $name"
     }

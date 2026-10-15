@@ -1,5 +1,6 @@
 package ru.itmo.dormitory.dto;
 
+import jakarta.json.bind.annotation.JsonbTypeAdapter;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -44,17 +45,16 @@ public class StudentFilter {
     public Boolean isForeign;
 
     @QueryParam("sort")
-    @NotNull(message = "Поле sort не может быть null")
+    @NotNull(message = "Сортировать можно по: fullName, group, isuId, dormitory, room, settlementPeriod")
     @DefaultValue("fullName")
-    @Pattern(regexp = "fullName|group|isuId|dormitory|room|settlementPeriod",
-            message = "Сортировать можно по: fullName, group, isuId, dormitory, room, settlementPeriod")
-    public String sort = "fullName";
+    @JsonbTypeAdapter(SortField.Adapter.class)
+    public SortField sort = SortField.FULL_NAME;
 
     @QueryParam("order")
-    @NotNull(message = "Поле order не может быть null")
+    @NotNull(message = "Порядок сортировки: asc или desc")
     @DefaultValue("asc")
-    @Pattern(regexp = "asc|desc", message = "Порядок сортировки: asc или desc")
-    public String order = "asc";
+    @JsonbTypeAdapter(SortOrder.Adapter.class)
+    public SortOrder order = SortOrder.ASC;
 
     @QueryParam("page")
     @NotNull(message = "Поле page не может быть null")

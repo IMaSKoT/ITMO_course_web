@@ -4,7 +4,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.mindrot.jbcrypt.BCrypt;
 import ru.itmo.dormitory.dto.LoginRequest;
 import ru.itmo.dormitory.dto.RegisterRequest;
 import ru.itmo.dormitory.dto.TokenResponse;
@@ -15,6 +14,7 @@ import ru.itmo.dormitory.entity.User;
 import ru.itmo.dormitory.error.ApiException;
 import ru.itmo.dormitory.repository.RefreshTokenRepository;
 import ru.itmo.dormitory.repository.UserRepository;
+import ru.itmo.dormitory.security.PasswordHasher;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -30,7 +30,6 @@ public class AuthService {
 
     private static final Logger LOG = Logger.getLogger(AuthService.class.getName());
     private static final SecureRandom RANDOM = new SecureRandom();
-    private static final int BCRYPT_COST = 12;
 
     @Inject
     private UserRepository userRepository;
@@ -57,7 +56,7 @@ public class AuthService {
             throw ApiException.conflict("EMAIL_TAKEN", "Email " + email + " уже зарегистрирован");
         }
 
-        User user = new User(username, email, hashPassword(request.password), Role.USER);
+        User user = new User(username, email, PasswordHasher.hash(request.password), Role.USER);
         userRepository.save(user);
 
         LOG.info("Registered new user: " + username);
@@ -68,7 +67,7 @@ public class AuthService {
     public TokenResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.username.trim()).orElse(null);
 
-        if (user == null || !BCrypt.checkpw(request.password, user.getPasswordHash())) {
+        if (user == null || !PasswordHasher.matches(request.password, user.getPasswordHash())) {
             LOG.warning("Failed login attempt for username: " + request.username);
             throw ApiException.unauthorized("INVALID_CREDENTIALS", "Неверный логин или пароль");
         }
@@ -91,10 +90,15 @@ public class AuthService {
 
     @Transactional
     public void createAdminIfMissing(String username, String email, String password) {
+        email = email.toLowerCase();
         if (userRepository.existsByUsername(username)) {
             return;
         }
-        userRepository.save(new User(username, email.toLowerCase(), hashPassword(password), Role.ADMIN));
+        if (userRepository.existsByEmail(email)) {
+            LOG.warning("Admin is not created: email " + email + " is already used by another user");
+            return;
+        }
+        userRepository.save(new User(username, email, PasswordHasher.hash(password), Role.ADMIN));
         LOG.info("Created admin user: " + username);
     }
 
@@ -106,10 +110,6 @@ public class AuthService {
         refreshTokenRepository.save(new RefreshToken(sha256(refreshToken), user, expiresAt));
 
         return new TokenResponse(accessToken, refreshToken);
-    }
-
-    private static String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt(BCRYPT_COST));
     }
 
     private static String generateRefreshToken() {

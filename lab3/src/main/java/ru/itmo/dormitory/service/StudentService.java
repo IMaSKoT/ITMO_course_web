@@ -18,6 +18,7 @@ import ru.itmo.dormitory.dto.StudentResponse;
 import ru.itmo.dormitory.entity.Student;
 import ru.itmo.dormitory.error.ApiException;
 import ru.itmo.dormitory.repository.StudentRepository;
+import ru.itmo.dormitory.validation.SettlementDateValidator;
 
 import java.io.StringReader;
 import java.time.LocalDate;
@@ -32,7 +33,6 @@ public class StudentService {
     private static final Logger LOG = Logger.getLogger(StudentService.class.getName());
     private static final Jsonb JSONB = JsonbBuilder.create();
 
-    private static final LocalDate MIN_SETTLEMENT_DATE = LocalDate.of(2000, 1, 1);
     private static final String TOO_EARLY_DATE = "Дата заселения не может быть раньше 2000-01-01";
 
     @Inject
@@ -135,9 +135,6 @@ public class StudentService {
             throw ApiException.unprocessable("INVALID_DORMITORY_DATA",
                     "Данные об общежитии должны быть заполнены полностью");
         }
-        if (allSet && request.settlementPeriod.isBefore(MIN_SETTLEMENT_DATE)) {
-            throw ApiException.unprocessable("INVALID_DORMITORY_DATA", TOO_EARLY_DATE);
-        }
     }
 
     private void copyToEntity(StudentRequest request, Student student) {
@@ -161,7 +158,7 @@ public class StudentService {
         } catch (DateTimeParseException e) {
             throw ApiException.unprocessable("VALIDATION_ERROR", "Некорректная дата: " + value);
         }
-        if (date.isBefore(MIN_SETTLEMENT_DATE)) {
+        if (date.isBefore(SettlementDateValidator.MIN_DATE)) {
             throw ApiException.unprocessable("VALIDATION_ERROR", TOO_EARLY_DATE);
         }
         return date;
