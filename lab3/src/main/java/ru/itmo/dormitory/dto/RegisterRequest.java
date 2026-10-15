@@ -8,9 +8,9 @@ import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
 
-    @NotNull(message = "Имя пользователя обязательно")
+    @NotNull(message = "Логин обязателен")
     @Pattern(regexp = "^[A-Za-z0-9_]{3,32}$",
-            message = "Имя пользователя: 3-32 символа, латиница, цифры и _")
+            message = "Логин: 3-32 символа, латиница, цифры и _")
     public String username;
 
     @NotBlank(message = "Email обязателен")

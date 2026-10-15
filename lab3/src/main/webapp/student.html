@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информация о студенте</title>
+    <link rel="icon" href="img/img.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="topbar">
+        <h1>Информация о студенте</h1>
+        <div id="user-bar"></div>
+    </header>
+    <main>
+        <div id="student-errors" class="error-box" hidden></div>
+        <section class="student-info" hidden>
+            <h2 id="student-name"></h2>
+            <p>
+                <strong>Группа:</strong>
+                <span id="student-group"></span>
+            </p>
+            <p>
+                <strong>ИСУ:</strong>
+                <span id="student-isu"></span>
+            </p>
+            <p>
+                <strong>Номер общежития:</strong>
+                <span id="student-dormitory"></span>
+            </p>
+            <p>
+                <strong>Номер комнаты:</strong>
+                <span id="student-room"></span>
+            </p>
+            <p>
+                <strong>Дата заселения:</strong>
+                <span id="student-settlement-period"></span>
+            </p>
+            <p>
+                <strong>Иностранец:</strong>
+                <span id="student-foreign"></span>
+            </p>
+            <section class="student-notes">
+                <h3>Заметки</h3>
+                <p id="student-notes"></p>
+            </section>
+            <div class="student-actions admin-only" hidden>
+                <a id="edit-link" href="form.html">Изменить</a>
+                <button type="button" id="delete-button" class="danger">Удалить</button>
+            </div>
+        </section>
+        <a href="index.html">Вернуться к списку студентов</a>
+    </main>
+    <script type="module" src="js/student.js"></script>
+</body>
+</html>

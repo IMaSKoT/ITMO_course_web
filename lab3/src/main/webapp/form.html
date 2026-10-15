@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма добавления/редактирования</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="img/img.png">
+</head>
+<body>
+    <header class="topbar">
+        <h2 id="form-title">Добавление студента</h2>
+        <div id="user-bar"></div>
+    </header>
+    <main>
+        <div id="form-errors" class="error-box" hidden></div>
+        <form id="student-form">
+            <div>
+                <label for="surname">Фамилия</label>
+                <input type="text" id="surname" placeholder="Иванов" pattern="[А-Яа-яЁё\-]{2,43}" name="surname"
+                       title="От 2 до 43 букв кириллицей" required>
+            </div>
+            <div>
+                <label for="name">Имя</label>
+                <input type="text" id="name" placeholder="Иван" pattern="[А-Яа-яЁё\-]{2,45}" name="name"
+                       title="От 2 до 45 букв кириллицей" required>
+            </div>
+            <div>
+                <label for="patronymic">Отчество</label>
+                <input type="text" id="patronymic" placeholder="Иванович" pattern="[А-Яа-яЁё]{2,45}" name="patronymic"
+                       title="От 2 до 45 букв кириллицей">
+            </div>
+            <div>
+                <label for="group">Группа</label>
+                <input type="text" id="group" pattern="[A-Z][1-9][0-9]{3}" placeholder="P3210" name="group"
+                       title="Формат: латинская заглавная буква и 4 цифры, например P3210" required>
+            </div>
+            <div>
+                <label for="isuId">ИСУ</label>
+                <input type="text" id="isuId" pattern="[1-9][0-9]{5}" placeholder="555555" name="isuId"
+                       title="6-ти значный код, начинающийся не с 0" required>
+            </div>
+            <div>
+                <label for="dormitory">Номер общежития</label>
+                <input type="number" min="1" max="999" id="dormitory" placeholder="8" name="dormitory">
+            </div>
+            <div>
+                <label for="room">Номер комнаты</label>
+                <input type="number" min="1" max="9999" id="room" placeholder="412" name="room">
+            </div>
+            <div>
+                <label for="settlementPeriod">Дата заселения</label>
+                <input type="date" min="2000-01-01" id="settlementPeriod" name="settlementPeriod">
+            </div>
+            <p class="hint">Общежитие, комнату и дату заселения нужно заполнить вместе или оставить пустыми</p>
+            <div>
+                <label for="isForeign">Иностранный гражданин</label>
+                <input type="checkbox" id="isForeign" name="isForeign">
+            </div>
+            <div>
+                <label for="notes">Заметки</label>
+                <textarea id="notes" rows="5" maxlength="1000" placeholder="Заметки" name="notes"></textarea>
+            </div>
+            <div>
+                <button type="submit">Сохранить</button>
+            </div>
+        </form>
+        <a href="index.html">Вернуться к таблице</a>
+    </main>
+    <script type="module" src="js/form.js"></script>
+</body>
+</html>

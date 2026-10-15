@@ -51,7 +51,7 @@ public class AuthService {
         String email = request.email.trim().toLowerCase();
 
         if (userRepository.existsByUsername(username)) {
-            throw ApiException.conflict("USERNAME_TAKEN", "Имя пользователя " + username + " уже занято");
+            throw ApiException.conflict("USERNAME_TAKEN", "Логин " + username + " уже занят");
         }
         if (userRepository.existsByEmail(email)) {
             throw ApiException.conflict("EMAIL_TAKEN", "Email " + email + " уже зарегистрирован");
@@ -70,7 +70,7 @@ public class AuthService {
 
         if (user == null || !BCrypt.checkpw(request.password, user.getPasswordHash())) {
             LOG.warning("Failed login attempt for username: " + request.username);
-            throw ApiException.unauthorized("INVALID_CREDENTIALS", "Неверное имя пользователя или пароль");
+            throw ApiException.unauthorized("INVALID_CREDENTIALS", "Неверный логин или пароль");
         }
 
         LOG.info("User logged in: " + user.getUsername());

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="img/img.png">
+</head>
+<body>
+    <main class="auth">
+        <h1>Студенты общежития</h1>
+        <div class="tabs">
+            <button type="button" class="tab active" data-form="login-form">Вход</button>
+            <button type="button" class="tab" data-form="register-form">Регистрация</button>
+        </div>
+        <div id="auth-errors" class="error-box" hidden></div>
+
+        <form id="login-form">
+            <div>
+                <label for="login-username">Логин</label>
+                <input type="text" id="login-username" name="username" autocomplete="username" required>
+            </div>
+            <div>
+                <label for="login-password">Пароль</label>
+                <input type="password" id="login-password" name="password" autocomplete="current-password" required>
+            </div>
+            <div>
+                <button type="submit">Войти</button>
+            </div>
+        </form>
+
+        <form id="register-form" hidden>
+            <div>
+                <label for="register-username">Логин</label>
+                <input type="text" id="register-username" name="username" autocomplete="username"
+                       pattern="[A-Za-z0-9_]{3,32}" title="3-32 символа: латиница, цифры и _" required>
+            </div>
+            <div>
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" name="email" maxlength="255" autocomplete="email" required>
+            </div>
+            <div>
+                <label for="register-password">Пароль</label>
+                <input type="password" id="register-password" name="password" autocomplete="new-password"
+                       minlength="8" maxlength="72" pattern="(?=.*[A-Za-z])(?=.*\d).+"
+                       title="От 8 до 72 символов, хотя бы одна буква и одна цифра" required>
+            </div>
+            <div>
+                <label for="register-password-repeat">Повторите пароль</label>
+                <input type="password" id="register-password-repeat" name="passwordRepeat"
+                       autocomplete="new-password" required>
+            </div>
+            <div>
+                <button type="submit">Зарегистрироваться</button>
+            </div>
+        </form>
+    </main>
+    <script type="module" src="js/login.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest {
 
-    @NotBlank(message = "Имя пользователя обязательно")
+    @NotBlank(message = "Логин обязателен")
     public String username;
 
     @NotBlank(message = "Пароль обязателен")

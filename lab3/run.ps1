@@ -19,7 +19,7 @@ foreach ($name in 'DB_URL', 'DB_USER', 'DB_PASSWORD', 'JWT_SECRET', 'ADMIN_PASSW
 try {
     $api = Invoke-RestMethod http://localhost:8080/openapi -Headers @{ Accept = 'application/json' } -TimeoutSec 2
     if ($api.info.title -eq 'Dormitory API') {
-        Write-Host 'Already running: http://localhost:8080/swagger.html'
+        Write-Host 'Already running: http://localhost:8080/ (swagger: http://localhost:8080/swagger.html)'
         return
     }
 } catch {}
