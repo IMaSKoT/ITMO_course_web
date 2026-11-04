@@ -1,16 +1,20 @@
 package ru.itmo.dormitory.resource;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.security.enterprise.SecurityContext;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ru.itmo.dormitory.dto.LoginRequest;
 import ru.itmo.dormitory.dto.RefreshRequest;
@@ -30,6 +34,9 @@ public class AuthResource {
 
     @Inject
     private AuthService authService;
+
+    @Inject
+    private SecurityContext securityContext;
 
     @POST
     @Path("/register")
@@ -51,5 +58,14 @@ public class AuthResource {
     @Operation(summary = "Новый access-токен по refresh-токену")
     public TokenResponse refresh(@NotNull(message = BODY_REQUIRED) @Valid RefreshRequest request) {
         return authService.refresh(request.refreshToken);
+    }
+
+    @GET
+    @Path("/me")
+    @RolesAllowed({"USER", "ADMIN"})
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Данные текущего пользователя")
+    public UserResponse me() {
+        return authService.getUser(securityContext.getCallerPrincipal().getName());
     }
 }

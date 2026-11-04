@@ -99,6 +99,10 @@ public class StudentRepository {
             where.append(" and s.isForeign = :isForeign");
             params.put("isForeign", filter.isForeign);
         }
+        if (filter.notes != null) {
+            where.append(" and lower(s.notes) like :notes");
+            params.put("notes", "%" + filter.notes.trim().toLowerCase() + "%");
+        }
         return where.toString();
     }
 }

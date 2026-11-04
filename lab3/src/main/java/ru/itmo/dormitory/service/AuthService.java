@@ -89,6 +89,13 @@ public class AuthService {
     }
 
     @Transactional
+    public UserResponse getUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> ApiException.notFound("USER_NOT_FOUND", "Пользователь не найден"));
+        return UserResponse.from(user);
+    }
+
+    @Transactional
     public void createAdminIfMissing(String username, String email, String password) {
         email = email.toLowerCase();
         if (userRepository.existsByUsername(username)) {

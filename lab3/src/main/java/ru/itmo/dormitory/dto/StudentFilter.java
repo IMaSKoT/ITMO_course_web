@@ -44,6 +44,10 @@ public class StudentFilter {
     @QueryParam("isForeign")
     public Boolean isForeign;
 
+    @QueryParam("notes")
+    @Size(min = 1, max = 1000, message = "Строка поиска по заметкам от 1 до 1000 символов")
+    public String notes;
+
     @QueryParam("sort")
     @NotNull(message = "Сортировать можно по: fullName, group, isuId, dormitory, room, settlementPeriod")
     @DefaultValue("fullName")
