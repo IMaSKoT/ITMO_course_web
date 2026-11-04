@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_INITDB_ARGS: --locale=en_US.UTF-8
+      POSTGRES_DB: ${DB_NAME:-dormitory}
+      POSTGRES_USER: ${DB_USER:-dormitory}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dormitory}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ../lab3
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-dormitory}
+      DB_USER: ${DB_USER:-dormitory}
+      DB_PASSWORD: ${DB_PASSWORD:-dormitory}
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-this-is-a-local-secret}
+      JWT_ISSUER: ${JWT_ISSUER:-dormitory-app}
+      JWT_ACCESS_TTL_MINUTES: ${JWT_ACCESS_TTL_MINUTES:-15}
+      JWT_REFRESH_TTL_DAYS: ${JWT_REFRESH_TTL_DAYS:-7}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@itmo.ru}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin12345}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: .
+    environment:
+      BACKEND_URL: http://backend:8080
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
