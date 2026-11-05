@@ -1,6 +1,6 @@
 const USERNAME_REGEX = /^[A-Za-z0-9_]{3,32}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).+$/;
+const PASSWORD_REGEX = /^(?=.*[A-Za-zА-Яа-яЁё])(?=.*\d).+$/;
 
 export const ROLE_NAMES = {
     ADMIN: "Администратор",

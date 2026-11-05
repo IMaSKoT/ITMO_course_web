@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 
 @NotNull(message = "Пароль обязателен")
 @Size(min = 8, max = 72, message = "Пароль от 8 до 72 символов")
-@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$",
+@Pattern(regexp = "^(?=.*[A-Za-zА-Яа-яЁё])(?=.*\\d).+$",
         message = "Пароль должен содержать хотя бы одну букву и одну цифру")
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
