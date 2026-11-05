@@ -35,6 +35,9 @@ public class DataInitializer {
     private static final Logger LOG = Logger.getLogger(DataInitializer.class.getName());
 
     @Inject
+    private RoleTypeInitializer roleTypeInitializer;
+
+    @Inject
     private AuthService authService;
 
     @Inject
@@ -56,6 +59,7 @@ public class DataInitializer {
     private Optional<String> adminPassword;
 
     void onStart(@Observes @Initialized(ApplicationScoped.class) Object event) {
+        roleTypeInitializer.apply();
         createAdmin();
         importStudents();
     }

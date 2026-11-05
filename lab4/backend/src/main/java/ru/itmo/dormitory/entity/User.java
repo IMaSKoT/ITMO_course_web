@@ -28,7 +28,7 @@ public class User {
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(16) check (role in ('USER', 'ADMIN'))")
+    @Column(nullable = false, length = 16)
     private Role role;
 
     protected User() {
