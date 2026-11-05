@@ -7,13 +7,14 @@
     import {formatValue} from "../domain/student.js";
     import {createAction} from "../rx/action.js";
     import {createLoader} from "../rx/loader.js";
+    import {toPollingState} from "../rx/request.js";
     import {navigate} from "../router/router.js";
     import {user} from "../stores/auth.js";
     import {showNotice} from "../stores/notice.js";
 
     let {params} = $props();
 
-    const loader = createLoader(getStudent);
+    const loader = createLoader(getStudent, toPollingState);
     const remove = createAction(deleteStudent, () => {
         showNotice("Студент успешно удалён!");
         navigate("/students");

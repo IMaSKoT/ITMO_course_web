@@ -1,4 +1,6 @@
-import {catchError, map, Observable, of, startWith} from "rxjs";
+import {catchError, concat, filter, interval, map, Observable, of, startWith, switchMap} from "rxjs";
+
+const REFRESH_INTERVAL = 30000;
 
 export function fromRequest(requestFn) {
     return new Observable(subscriber => {
@@ -19,5 +21,15 @@ export function toAsyncState(requestFn) {
         map(data => ({status: "success", data})),
         startWith({status: "loading"}),
         catchError(error => of({status: "error", error}))
+    );
+}
+
+// фоновые запросы идут без статуса loading, чтобы страница не мигала лоадером
+export function toPollingState(requestFn) {
+    return concat(
+        toAsyncState(requestFn),
+        interval(REFRESH_INTERVAL).pipe(
+            switchMap(() => toAsyncState(requestFn).pipe(filter(next => next.status !== "loading")))
+        )
     );
 }

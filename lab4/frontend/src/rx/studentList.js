@@ -10,7 +10,7 @@ import {
     Subject,
     switchMap,
 } from "rxjs";
-import {toAsyncState} from "./request.js";
+import {toPollingState} from "./request.js";
 
 const INPUT_DELAY = 300;
 
@@ -45,7 +45,7 @@ export function createStudentList(loadPage, initialQuery, toParams, prepareFilte
         reload$.pipe(startWith(null)),
     ])
         .pipe(
-            switchMap(([current]) => toAsyncState(signal => loadPage(toParams(current), signal))),
+            switchMap(([current]) => toPollingState(signal => loadPage(toParams(current), signal))),
             scan((previous, next) => ({...next, data: next.data ?? previous.data}), {})
         )
         .subscribe(next => {
