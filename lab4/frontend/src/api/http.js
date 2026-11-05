@@ -1,5 +1,5 @@
 import {defer, finalize, firstValueFrom, shareReplay, switchMap, tap} from "rxjs";
-import {clearTokens, getAccessToken, getRefreshToken, saveTokens} from "../stores/auth.js";
+import {clearTokens, getAccessToken, saveTokens} from "../stores/auth.js";
 import {showNotice} from "../stores/notice.js";
 
 const API_URL = "/api";
@@ -79,7 +79,7 @@ let refreshing$ = null;
 
 function refreshTokens() {
     if (!refreshing$) {
-        refreshing$ = defer(() => send("/auth/refresh", {method: "POST", body: {refreshToken: getRefreshToken()}})).pipe(
+        refreshing$ = defer(() => send("/auth/refresh", {method: "POST"})).pipe(
             switchMap(readResponse),
             tap(saveTokens),
             finalize(() => {
@@ -101,9 +101,6 @@ async function updateToken(usedToken) {
     const storedToken = getAccessToken();
     if (storedToken && storedToken !== usedToken) {
         return;
-    }
-    if (!getRefreshToken()) {
-        throw expireSession();
     }
     try {
         await refreshTokens();

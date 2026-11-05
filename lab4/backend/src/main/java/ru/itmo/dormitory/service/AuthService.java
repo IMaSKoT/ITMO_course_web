@@ -4,9 +4,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import ru.itmo.dormitory.dto.IssuedTokens;
 import ru.itmo.dormitory.dto.LoginRequest;
 import ru.itmo.dormitory.dto.RegisterRequest;
-import ru.itmo.dormitory.dto.TokenResponse;
 import ru.itmo.dormitory.dto.UserResponse;
 import ru.itmo.dormitory.entity.RefreshToken;
 import ru.itmo.dormitory.entity.Role;
@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HexFormat;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -64,7 +65,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse login(LoginRequest request) {
+    public IssuedTokens login(LoginRequest request) {
         User user = userRepository.findByUsername(request.username.trim()).orElse(null);
 
         if (user == null || !PasswordHasher.matches(request.password, user.getPasswordHash())) {
@@ -77,15 +78,19 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse refresh(String refreshToken) {
-        RefreshToken stored = refreshTokenRepository.findByHash(sha256(refreshToken))
-                .filter(RefreshToken::isActive)
+    public IssuedTokens refresh(String refreshToken) {
+        RefreshToken stored = findActive(refreshToken)
                 .orElseThrow(() -> ApiException.unauthorized("INVALID_REFRESH_TOKEN",
                         "Refresh-токен недействителен или истёк, войдите заново"));
 
         stored.revoke();
         LOG.info("Tokens refreshed for user: " + stored.getUser().getUsername());
         return issueTokens(stored.getUser());
+    }
+
+    @Transactional
+    public void logout(String refreshToken) {
+        findActive(refreshToken).ifPresent(RefreshToken::revoke);
     }
 
     @Transactional
@@ -109,14 +114,21 @@ public class AuthService {
         LOG.info("Created admin user: " + username);
     }
 
-    private TokenResponse issueTokens(User user) {
+    private Optional<RefreshToken> findActive(String refreshToken) {
+        if (refreshToken == null) {
+            return Optional.empty();
+        }
+        return refreshTokenRepository.findByHash(sha256(refreshToken)).filter(RefreshToken::isActive);
+    }
+
+    private IssuedTokens issueTokens(User user) {
         String accessToken = jwtService.createAccessToken(user);
         String refreshToken = generateRefreshToken();
 
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(refreshTtlDays);
         refreshTokenRepository.save(new RefreshToken(sha256(refreshToken), user, expiresAt));
 
-        return new TokenResponse(accessToken, refreshToken);
+        return new IssuedTokens(accessToken, refreshToken);
     }
 
     private static String generateRefreshToken() {

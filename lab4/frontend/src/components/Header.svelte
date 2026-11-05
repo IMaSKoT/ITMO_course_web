@@ -1,9 +1,12 @@
 <script>
     import Link from "./Link.svelte";
+    import {logout as revokeSession} from "../api/auth.js";
     import {clearTokens, user} from "../stores/auth.js";
     import {navigate} from "../router/router.js";
 
     function logout() {
+        // выходим и при недоступном сервере, токен тогда просто доживёт свой срок
+        revokeSession().catch(() => {});
         clearTokens();
         navigate("/login");
     }

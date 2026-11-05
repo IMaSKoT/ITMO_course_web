@@ -10,6 +10,10 @@ export async function register({username, email, password}, signal) {
     await login({username, password}, signal);
 }
 
+export function logout() {
+    return publicRequest("/auth/logout");
+}
+
 export function getMe(signal) {
     return request("/auth/me", {signal});
 }
