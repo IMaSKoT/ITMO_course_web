@@ -5,7 +5,7 @@ services:
       POSTGRES_INITDB_ARGS: --locale=en_US.UTF-8
       POSTGRES_DB: ${DB_NAME:-dormitory}
       POSTGRES_USER: ${DB_USER:-dormitory}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-dormitory}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?задайте DB_PASSWORD в .env}
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
@@ -19,15 +19,15 @@ services:
     environment:
       DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-dormitory}
       DB_USER: ${DB_USER:-dormitory}
-      DB_PASSWORD: ${DB_PASSWORD:-dormitory}
-      JWT_SECRET: ${JWT_SECRET:-change-me-please-this-is-a-local-secret}
+      DB_PASSWORD: ${DB_PASSWORD:?задайте DB_PASSWORD в .env}
+      JWT_SECRET: ${JWT_SECRET:?задайте JWT_SECRET в .env}
       JWT_ISSUER: ${JWT_ISSUER:-dormitory-app}
       JWT_ACCESS_TTL_MINUTES: ${JWT_ACCESS_TTL_MINUTES:-15}
       JWT_REFRESH_TTL_DAYS: ${JWT_REFRESH_TTL_DAYS:-7}
       AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@itmo.ru}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin12345}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?задайте ADMIN_PASSWORD в .env}
     depends_on:
       db:
         condition: service_healthy
