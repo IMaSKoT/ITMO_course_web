@@ -189,7 +189,7 @@ td a:hover {
 #filters-form {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: var(--space-lg);
     padding: var(--space-xl);
     margin-bottom: var(--space-xxl);
@@ -210,8 +210,10 @@ td a:hover {
 }
 
 #filters-form button {
+    /* label line above the inputs, keeps the button on the same level */
+    margin-top: 1lh;
     min-width: var(--filter-button-width);
-    padding: var(--space-md) var(--space-xxl);
+    padding: var(--space-sm) var(--space-xxl);
     border: var(--border-width) solid var(--color-primary);
 }
 
@@ -459,7 +461,10 @@ td.actions button {
     color: var(--color-danger);
 }
 
+/* width 0 + min-width 100%: long error wraps and does not widen the field */
 #filters-form .field-error {
+    width: 0;
+    min-width: 100%;
     margin: var(--space-xs) 0 0;
 }
 
