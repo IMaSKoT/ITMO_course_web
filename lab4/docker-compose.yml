@@ -25,8 +25,8 @@ services:
       JWT_ACCESS_TTL_MINUTES: ${JWT_ACCESS_TTL_MINUTES:-15}
       JWT_REFRESH_TTL_DAYS: ${JWT_REFRESH_TTL_DAYS:-7}
       AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
-      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@itmo.ru}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:?задайте ADMIN_USERNAME в .env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?задайте ADMIN_EMAIL в .env}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?задайте ADMIN_PASSWORD в .env}
     depends_on:
       db:
