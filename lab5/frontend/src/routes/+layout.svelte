@@ -1,4 +1,5 @@
 <script>
+    import "bootswatch/dist/zephyr/bootstrap.min.css";
     import "../app.css";
     import {navigating} from "$app/state";
     import Header from "#lib/components/Header.svelte";
@@ -9,9 +10,9 @@
 </script>
 
 <Header user={data.user} />
-<main>
+<main class="container-xxl py-4">
     {#if $notice}
-        <p class="status" class:error={$notice.isError}>{$notice.text}</p>
+        <p class="alert" class:alert-danger={$notice.isError} class:alert-success={!$notice.isError} role="status">{$notice.text}</p>
     {/if}
     {#if navigating.to}
         <Loader />

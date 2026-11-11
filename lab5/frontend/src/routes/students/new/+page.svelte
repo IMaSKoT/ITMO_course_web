@@ -7,4 +7,4 @@
 
 <h2>Добавление студента</h2>
 <StudentForm initial={emptyStudentForm()} {form} notice="Студент успешно добавлен!" />
-<a href="/students">Вернуться к таблице</a>
+<a class="btn btn-outline-primary btn-sm mt-3" href="/students">Вернуться к таблице</a>

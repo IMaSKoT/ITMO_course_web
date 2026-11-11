@@ -7,4 +7,4 @@
 
 <h2>Редактирование студента</h2>
 <StudentForm initial={studentToForm(data.student)} {form} notice="Данные студента успешно изменены!" />
-<a href="/students">Вернуться к таблице</a>
+<a class="btn btn-outline-primary btn-sm mt-3" href="/students">Вернуться к таблице</a>

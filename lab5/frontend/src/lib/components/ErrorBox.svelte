@@ -8,10 +8,10 @@
 </script>
 
 {#if error}
-    <div class="error-box">
-        <p>{message}</p>
+    <div class="alert alert-danger" role="alert">
+        <p class="mb-0">{message}</p>
         {#if details.length > 0}
-            <ul>
+            <ul class="mt-2 mb-0">
                 {#each details as detail}
                     <li>{FIELD_LABELS[detail.field] ? `${FIELD_LABELS[detail.field]}: ` : ""}{detail.message}</li>
                 {/each}

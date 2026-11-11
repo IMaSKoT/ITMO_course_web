@@ -5,8 +5,8 @@
 </script>
 
 <h2>Профиль</h2>
-<section class="student-info">
-    <h2>{data.profile.username}</h2>
+<section class="card p-4">
+    <h3 class="h5">{data.profile.username}</h3>
     <p><strong>Email:</strong> {data.profile.email}</p>
     <p><strong>Роль:</strong> {ROLE_NAMES[data.profile.role] ?? data.profile.role}</p>
 </section>

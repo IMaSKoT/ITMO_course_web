@@ -47,6 +47,13 @@
     onMount(() => startPolling("app:students"));
 </script>
 
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <h2 class="h4 mb-0">Студенты</h2>
+    {#if isAdmin}
+        <a class="btn btn-primary btn-sm" href="/students/new">Добавить студента</a>
+    {/if}
+</div>
+
 <StudentFilters initial={data.query.filters} onchange={handleFilters} />
 
 <ErrorBox error={form?.error} />
@@ -60,15 +67,13 @@
     onsort={toggleSort}
     ondelete={confirmDelete}
 />
-<Pagination
-    page={data.result.page}
-    totalPages={data.result.totalPages}
-    totalItems={data.result.totalItems}
-    size={data.query.size}
-    onpage={page => update({page})}
-    onsize={size => update({size, page: 1})}
-/>
-
-{#if isAdmin}
-    <a href="/students/new">Добавить студента</a>
-{/if}
+<div class="mt-3">
+    <Pagination
+        page={data.result.page}
+        totalPages={data.result.totalPages}
+        totalItems={data.result.totalItems}
+        size={data.query.size}
+        onpage={page => update({page})}
+        onsize={size => update({size, page: 1})}
+    />
+</div>
