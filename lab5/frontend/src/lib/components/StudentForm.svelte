@@ -48,3 +48,19 @@
         <button type="submit" class="btn btn-primary" disabled={status.loading}>{status.loading ? "Сохранение..." : "Сохранить"}</button>
     </div>
 </form>
+
+<style>
+    .form-check-input:hover {
+        cursor: pointer;
+        outline: 2px solid var(--bs-border-color);
+        outline-offset: 2px;
+    }
+
+    .form-check-input:focus:not(:focus-visible) {
+        box-shadow: none;
+    }
+
+    .form-check-input:focus:not(:focus-visible):not(:checked) {
+        border-color: var(--bs-border-color);
+    }
+</style>
