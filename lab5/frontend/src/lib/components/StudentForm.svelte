@@ -2,17 +2,22 @@
     import {enhance} from "$app/forms";
     import ErrorBox from "./ErrorBox.svelte";
     import Field from "./Field.svelte";
-    import {submitForm} from "../forms.js";
+    import {readStudentForm, validateStudentForm} from "../domain/student.js";
+    import {submitForm, visibleErrors} from "../forms.js";
 
     let {initial, form, notice} = $props();
 
+    const status = $state({loading: false, errors: {}});
     const values = $derived(form?.values ?? initial);
-    const errors = $derived(form?.errors ?? {});
-    const status = $state({loading: false});
+    const errors = $derived(visibleErrors(status, form));
+
+    function validate(formData) {
+        return validateStudentForm(readStudentForm(formData));
+    }
 </script>
 
 <ErrorBox error={form?.error} />
-<form id="student-form" method="POST" novalidate use:enhance={submitForm(status, {notice})}>
+<form id="student-form" method="POST" novalidate use:enhance={submitForm(status, {notice, validate})}>
     <Field id="surname" label="Фамилия" error={errors.surname}>
         <input id="surname" name="surname" type="text" placeholder="Иванов" value={values.surname}>
     </Field>

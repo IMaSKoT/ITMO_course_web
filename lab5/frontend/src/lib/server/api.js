@@ -87,6 +87,7 @@ export function register(username, email, password) {
     return request("/auth/register", {method: "POST", body: {username, email, password}});
 }
 
+// refresh-токен одноразовый, поэтому параллельные запросы делят один общий ответ
 const refreshing = new Map();
 
 export function refresh(refreshToken) {

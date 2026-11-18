@@ -1,6 +1,6 @@
 <script>
     import {onMount} from "svelte";
-    import {goto} from "$app/navigation";
+    import {afterNavigate, goto} from "$app/navigation";
     import ErrorBox from "#lib/components/ErrorBox.svelte";
     import Pagination from "#lib/components/Pagination.svelte";
     import StudentFilters from "#lib/components/StudentFilters.svelte";
@@ -16,6 +16,14 @@
     const deleteStatus = $state({loading: false});
 
     let filtersTimer;
+    let filtersVersion = $state(0);
+
+    // переход по ссылке сбрасывает адрес, поэтому поля фильтров создаём заново
+    afterNavigate(({type, to}) => {
+        if (type === "link" && to.route.id === "/students") {
+            filtersVersion += 1;
+        }
+    });
 
     function update(changes) {
         const params = new URLSearchParams(queryToParams({...data.query, ...changes}));
@@ -44,10 +52,18 @@
         });
     }
 
-    onMount(() => startPolling("app:students"));
+    onMount(() => {
+        const stopPolling = startPolling("app:students");
+        return () => {
+            stopPolling();
+            clearTimeout(filtersTimer);
+        };
+    });
 </script>
 
-<StudentFilters initial={data.query.filters} onchange={handleFilters} />
+{#key filtersVersion}
+    <StudentFilters initial={data.query.filters} onchange={handleFilters} />
+{/key}
 
 <ErrorBox error={form?.error} />
 

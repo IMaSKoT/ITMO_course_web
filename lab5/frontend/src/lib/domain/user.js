@@ -1,3 +1,5 @@
+import {readForm} from "./form.js";
+
 const USERNAME_REGEX = /^[A-Za-z0-9_]{3,32}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_REGEX = /^(?=.*[A-Za-zА-Яа-яЁё])(?=.*\d).+$/;
@@ -9,7 +11,15 @@ export const ROLE_NAMES = {
 
 export function nextPage(url) {
     const next = url.searchParams.get("next");
-    return next && next.startsWith("/") && !next.startsWith("//") ? next : "/students";
+    return next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : "/students";
+}
+
+export function readLoginForm(formData) {
+    return readForm(formData, ["username", "password"]);
+}
+
+export function readRegisterForm(formData) {
+    return readForm(formData, ["username", "email", "password", "passwordRepeat"]);
 }
 
 export function validateLogin(form) {

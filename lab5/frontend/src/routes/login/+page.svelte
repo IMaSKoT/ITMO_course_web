@@ -3,18 +3,23 @@
     import {page} from "$app/state";
     import ErrorBox from "#lib/components/ErrorBox.svelte";
     import Field from "#lib/components/Field.svelte";
-    import {submitForm} from "#lib/forms.js";
+    import {readLoginForm, validateLogin} from "#lib/domain/user.js";
+    import {submitForm, visibleErrors} from "#lib/forms.js";
 
     let {form} = $props();
 
-    const status = $state({loading: false});
-    const errors = $derived(form?.errors ?? {});
+    const status = $state({loading: false, errors: {}});
+    const errors = $derived(visibleErrors(status, form));
+
+    function validate(formData) {
+        return validateLogin(readLoginForm(formData));
+    }
 </script>
 
 <section class="auth">
     <h2>Вход</h2>
     <ErrorBox error={form?.error} />
-    <form method="POST" novalidate use:enhance={submitForm(status)}>
+    <form method="POST" novalidate use:enhance={submitForm(status, {validate})}>
         <Field id="username" label="Логин" error={errors.username}>
             <input id="username" name="username" type="text" autocomplete="username" value={form?.values?.username ?? ""}>
         </Field>

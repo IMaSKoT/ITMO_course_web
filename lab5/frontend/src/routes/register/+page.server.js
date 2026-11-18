@@ -1,12 +1,12 @@
 import {fail, redirect} from "@sveltejs/kit";
 import {formError, login, register} from "#lib/server/api.js";
 import {saveSession} from "#lib/server/session.js";
-import {hasErrors, readForm} from "#lib/domain/form.js";
-import {nextPage, validateRegister} from "#lib/domain/user.js";
+import {hasErrors} from "#lib/domain/form.js";
+import {nextPage, readRegisterForm, validateRegister} from "#lib/domain/user.js";
 
 export const actions = {
     default: async ({request, cookies, url}) => {
-        const form = readForm(await request.formData(), ["username", "email", "password", "passwordRepeat"]);
+        const form = readRegisterForm(await request.formData());
         const values = {username: form.username, email: form.email};
         const errors = validateRegister(form);
         if (hasErrors(errors)) {

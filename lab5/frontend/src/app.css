@@ -362,6 +362,10 @@ td.actions {
     white-space: nowrap;
 }
 
+td.actions form {
+    display: inline;
+}
+
 td.actions button {
     margin-left: var(--link-offset);
 }

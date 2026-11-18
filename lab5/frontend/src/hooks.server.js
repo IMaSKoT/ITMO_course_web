@@ -14,8 +14,11 @@ async function loadSession(event) {
             const tokens = await refresh(refreshToken);
             user = saveSession(event.cookies, tokens);
             token = tokens.accessToken;
-        } catch {
-            clearSession(event.cookies);
+        } catch (err) {
+            // при недоступном сервере сессию не трогаем, она ещё может пригодиться
+            if (err.status === 401) {
+                clearSession(event.cookies);
+            }
         }
     }
     if (isExpired(user)) {
