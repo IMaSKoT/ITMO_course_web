@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_INITDB_ARGS: --locale=en_US.UTF-8
+      POSTGRES_DB: ${DB_NAME:-dormitory}
+      POSTGRES_USER: ${DB_USER:-dormitory}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?задайте DB_PASSWORD в .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-dormitory}
+      DB_USER: ${DB_USER:-dormitory}
+      DB_PASSWORD: ${DB_PASSWORD:?задайте DB_PASSWORD в .env}
+      JWT_SECRET: ${JWT_SECRET:?задайте JWT_SECRET в .env}
+      JWT_ISSUER: ${JWT_ISSUER:-dormitory-app}
+      JWT_ACCESS_TTL_MINUTES: ${JWT_ACCESS_TTL_MINUTES:-15}
+      JWT_REFRESH_TTL_DAYS: ${JWT_REFRESH_TTL_DAYS:-7}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:?задайте ADMIN_USERNAME в .env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?задайте ADMIN_EMAIL в .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?задайте ADMIN_PASSWORD в .env}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        ORIGIN: http://localhost:${FRONTEND_PORT:-3000}
+    environment:
+      BACKEND_URL: http://backend:8080
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
