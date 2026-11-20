@@ -2,7 +2,18 @@ import http from "node:http";
 import {ALLOWED_ORIGIN, PORT, checkConfig} from "./config.js";
 import {getUser} from "./auth.js";
 import {HttpError, sendError, sendJson} from "./http.js";
-import {acceptWebSocket, clientCount, rejectUpgrade, startHeartbeat} from "./websocket.js";
+import {getJournalPage, loadJournal} from "./journal.js";
+import {receiveEvent} from "./events.js";
+import {exportCsv, getImport, importCsv} from "./transfer.js";
+import {acceptOffer, clientCount, startHeartbeat} from "./webrtc.js";
+
+function readNumber(url, name, defaultValue, max) {
+    const value = Number(url.searchParams.get(name) ?? defaultValue);
+    if (!Number.isInteger(value) || value < 1 || value > max) {
+        throw new HttpError(422, `Параметр ${name} должен быть целым числом от 1 до ${max}`);
+    }
+    return value;
+}
 
 async function route(req, res, url) {
     const key = `${req.method} ${url.pathname}`;
@@ -10,36 +21,46 @@ async function route(req, res, url) {
         sendJson(res, 200, {status: "ok", clients: clientCount()});
         return;
     }
+    if (key === "POST /internal/events") {
+        await receiveEvent(req, res);
+        return;
+    }
     const user = getUser(req);
     if (!user) {
         throw new HttpError(401, "Нужно войти в систему");
     }
+    if (user.role !== "ADMIN") {
+        throw new HttpError(403, "Недостаточно прав для этой операции");
+    }
+    if (req.method === "POST" && req.headers.origin !== ALLOWED_ORIGIN
+        && !req.headers.authorization?.startsWith("Bearer ")) {
+        throw new HttpError(403, "Недопустимый источник запроса");
+    }
+    if (key === "POST /import") {
+        await importCsv(req, res, user);
+        return;
+    }
+    if (key === "POST /rtc/offer") {
+        await acceptOffer(req, res, user);
+        return;
+    }
+    if (req.method === "GET" && url.pathname.startsWith("/imports/")) {
+        getImport(res, url.pathname.slice("/imports/".length));
+        return;
+    }
+    if (key === "GET /export") {
+        await exportCsv(res, user);
+        return;
+    }
+    if (key === "GET /journal") {
+        sendJson(res, 200, getJournalPage(readNumber(url, "page", 1, 100000), readNumber(url, "size", 20, 100)));
+        return;
+    }
     throw new HttpError(404, "Данные не найдены");
 }
 
-function handleUpgrade(req, socket) {
-    const url = new URL(req.url, "http://localhost");
-    if (url.pathname !== "/ws") {
-        rejectUpgrade(socket, 404, "Not Found");
-        return;
-    }
-    if (ALLOWED_ORIGIN && req.headers.origin !== ALLOWED_ORIGIN) {
-        rejectUpgrade(socket, 403, "Forbidden");
-        return;
-    }
-    const user = getUser(req);
-    if (!user) {
-        rejectUpgrade(socket, 401, "Unauthorized");
-        return;
-    }
-    if (user.role !== "ADMIN") {
-        rejectUpgrade(socket, 403, "Forbidden");
-        return;
-    }
-    acceptWebSocket(req, socket, user);
-}
-
 checkConfig();
+await loadJournal();
 
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, "http://localhost");
@@ -58,7 +79,6 @@ const server = http.createServer(async (req, res) => {
     }
 });
 
-server.on("upgrade", handleUpgrade);
 startHeartbeat();
 
 server.listen(PORT, () => {

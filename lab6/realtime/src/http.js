@@ -7,7 +7,7 @@ export class HttpError extends Error {
 }
 
 export function sendJson(res, status, body) {
-    res.writeHead(status, {"Content-Type": "application/json; charset=utf-8"});
+    res.writeHead(status, {"Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store"});
     res.end(JSON.stringify(body));
 }
 
@@ -18,9 +18,10 @@ export function sendError(res, status, message, details = []) {
 export async function readBody(req, limit) {
     const chunks = [];
     let size = 0;
-    for await (const chunk of req) {
+    for await (const chunk of req.iterator({destroyOnReturn: false})) {
         size += chunk.length;
         if (size > limit) {
+            req.resume();
             throw new HttpError(413, `Слишком большой запрос, максимум ${Math.round(limit / 1024)} КБ`);
         }
         chunks.push(chunk);

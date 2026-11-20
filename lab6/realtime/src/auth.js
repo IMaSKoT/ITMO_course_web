@@ -27,7 +27,10 @@ export function verifyToken(token) {
         if (head.alg !== "HS256" || claims.iss !== JWT_ISSUER || !claims.sub || !claims.role) {
             return null;
         }
-        if (!claims.exp || claims.exp <= Date.now() / 1000) {
+        if (typeof claims.exp !== "number" || !Number.isFinite(claims.exp) || claims.exp <= Date.now() / 1000) {
+            return null;
+        }
+        if (typeof claims.sub !== "string" || !["USER", "ADMIN"].includes(claims.role)) {
             return null;
         }
         return {username: claims.sub, role: claims.role, exp: claims.exp, token};

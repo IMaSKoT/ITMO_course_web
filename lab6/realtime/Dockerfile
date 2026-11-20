@@ -1,6 +1,7 @@
 FROM node:24-alpine
 WORKDIR /app
-COPY package.json ./
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 COPY src src
 ENV PORT=4000
 EXPOSE 4000
