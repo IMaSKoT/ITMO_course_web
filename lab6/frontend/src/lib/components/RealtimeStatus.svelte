@@ -7,4 +7,6 @@
     onMount(() => connectRealtime(value => status = value));
 </script>
 
-<p class="realtime-status" aria-live="polite">{status}</p>
+{#if status}
+    <p class="realtime-status" aria-live="polite">{status}</p>
+{/if}

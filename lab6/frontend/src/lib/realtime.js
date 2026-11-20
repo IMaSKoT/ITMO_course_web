@@ -87,7 +87,7 @@ export function connectRealtime(onstatus) {
                 clearTimeout(connectionTimer);
                 retryDelay = 1000;
                 lastMessage = Date.now();
-                onstatus("Уведомления подключены (WebRTC)");
+                onstatus("");
                 refreshPages();
                 heartbeat = setInterval(() => {
                     if (Date.now() - lastMessage > 45000) {
