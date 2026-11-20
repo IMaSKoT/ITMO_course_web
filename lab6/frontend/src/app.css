@@ -210,7 +210,6 @@ td a:hover {
 }
 
 #filters-form button {
-    /* label line above the inputs, keeps the button on the same level */
     margin-top: 1lh;
     min-width: var(--filter-button-width);
     padding: var(--space-sm) var(--space-xxl);
@@ -465,7 +464,6 @@ td.actions button {
     color: var(--color-danger);
 }
 
-/* width 0 + min-width 100%: long error wraps and does not widen the field */
 #filters-form .field-error {
     width: 0;
     min-width: 100%;
@@ -520,4 +518,46 @@ td.actions button {
     .field-error {
         margin-left: 0;
     }
+}
+
+.realtime-status {
+    color: var(--color-muted);
+    font-size: var(--font-size-small);
+    margin-bottom: var(--space-lg);
+}
+
+.section-description {
+    margin: var(--space-lg) 0;
+}
+
+.transfer-section {
+    margin-top: var(--space-xxl);
+    padding: var(--space-xl);
+    border: var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.transfer-section h3 {
+    margin-bottom: var(--space-lg);
+}
+
+.transfer-section input[type="file"] {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.csv-columns {
+    padding: var(--space-lg);
+    overflow-x: auto;
+    background: var(--color-table-head);
+}
+
+.import-result,
+.journal-table {
+    margin-top: var(--space-xl);
+}
+
+.import-result progress {
+    width: 100%;
+    margin: var(--space-lg) 0;
 }

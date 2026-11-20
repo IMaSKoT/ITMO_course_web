@@ -31,7 +31,7 @@ async function loadSession(event) {
 
 function checkAccess(event) {
     const routeId = event.route.id;
-    if (!routeId) {
+    if (!routeId || routeId === "/session") {
         return;
     }
     const {user} = event.locals;

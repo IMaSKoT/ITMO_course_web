@@ -3,6 +3,7 @@
     import {navigating} from "$app/state";
     import Header from "#lib/components/Header.svelte";
     import Loader from "#lib/components/Loader.svelte";
+    import RealtimeStatus from "#lib/components/RealtimeStatus.svelte";
     import {notice} from "#lib/stores/notice.js";
 
     let {data, children} = $props();
@@ -10,6 +11,11 @@
 
 <Header user={data.user} />
 <main>
+    {#if data.user?.role === "ADMIN"}
+        {#key data.user.username}
+            <RealtimeStatus />
+        {/key}
+    {/if}
     {#if $notice}
         <p class="status" class:error={$notice.isError}>{$notice.text}</p>
     {/if}

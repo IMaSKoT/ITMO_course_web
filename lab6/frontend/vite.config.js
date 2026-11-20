@@ -11,5 +11,11 @@ export default defineConfig({
     ],
     server: {
         port: 5173,
+        proxy: {
+            "/realtime": {
+                target: process.env.REALTIME_URL ?? "http://localhost:4000",
+                rewrite: path => path.replace(/^\/realtime/, ""),
+            },
+        },
     },
 });
