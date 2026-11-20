@@ -18,6 +18,7 @@ import ru.itmo.dormitory.dto.StudentResponse;
 import ru.itmo.dormitory.entity.Student;
 import ru.itmo.dormitory.error.ApiException;
 import ru.itmo.dormitory.repository.StudentRepository;
+import ru.itmo.dormitory.repository.StudentEventRepository;
 import ru.itmo.dormitory.validation.SettlementDateValidator;
 
 import java.io.StringReader;
@@ -40,6 +41,14 @@ public class StudentService {
 
     @Inject
     private Validator validator;
+
+    @Inject
+    private StudentEventRepository events;
+
+    @Transactional
+    public List<StudentResponse> getSnapshot() {
+        return repository.findAll().stream().map(StudentResponse::from).toList();
+    }
 
     @Transactional
     public PageResponse<StudentResponse> getStudents(StudentFilter filter) {
@@ -67,6 +76,7 @@ public class StudentService {
         copyToEntity(request, student);
         repository.save(student);
 
+        events.add("CREATE", student.getIsuId(), StudentResponse.from(student));
         LOG.info("Created student isuId=" + student.getIsuId());
         return StudentResponse.from(student);
     }
@@ -81,6 +91,7 @@ public class StudentService {
 
         copyToEntity(request, student);
 
+        events.add("UPDATE", isuId, StudentResponse.from(student));
         LOG.info("Updated student isuId=" + isuId);
         return StudentResponse.from(student);
     }
@@ -106,7 +117,9 @@ public class StudentService {
 
     @Transactional
     public void delete(int isuId) {
-        repository.delete(findOrThrow(isuId));
+        Student student = findOrThrow(isuId);
+        events.add("DELETE", isuId, StudentResponse.from(student));
+        repository.delete(student);
         LOG.info("Deleted student isuId=" + isuId);
     }
 

@@ -29,6 +29,7 @@ import ru.itmo.dormitory.dto.StudentResponse;
 import ru.itmo.dormitory.service.StudentService;
 
 import java.util.logging.Logger;
+import java.util.List;
 
 @Path("/students")
 @RequestScoped
@@ -47,6 +48,14 @@ public class StudentResource {
 
     @Inject
     private SecurityContext securityContext;
+
+    @GET
+    @Path("/snapshot")
+    @RolesAllowed("ADMIN")
+    @Operation(summary = "Снимок списка студентов для экспорта CSV")
+    public List<StudentResponse> snapshot() {
+        return studentService.getSnapshot();
+    }
 
     @GET
     @Operation(summary = "Список студентов: поиск по ФИО, фильтры, сортировка, пагинация")

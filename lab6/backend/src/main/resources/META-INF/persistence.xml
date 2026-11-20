@@ -10,6 +10,7 @@
         <class>ru.itmo.dormitory.entity.Student</class>
         <class>ru.itmo.dormitory.entity.User</class>
         <class>ru.itmo.dormitory.entity.RefreshToken</class>
+        <class>ru.itmo.dormitory.entity.StudentEvent</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>

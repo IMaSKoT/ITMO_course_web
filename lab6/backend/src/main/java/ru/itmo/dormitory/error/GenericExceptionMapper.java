@@ -14,6 +14,7 @@ import ru.itmo.dormitory.dto.ErrorResponse;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.sql.SQLException;
 
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Exception> {
@@ -22,6 +23,13 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(Exception e) {
+        Throwable cause = e;
+        while (cause != null) {
+            if (cause instanceof SQLException && "23505".equals(((SQLException) cause).getSQLState())) {
+                return build(409, "DUPLICATE_VALUE", "Запись с таким уникальным значением уже существует");
+            }
+            cause = cause.getCause();
+        }
         if (isJsonError(e)) {
             return build(400, "INVALID_JSON", "Тело запроса должно содержать корректный JSON");
         }

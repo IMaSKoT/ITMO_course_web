@@ -19,6 +19,10 @@ public class StudentRepository {
     @PersistenceContext(unitName = "dormitoryPU")
     private EntityManager em;
 
+    public List<Student> findAll() {
+        return em.createQuery("select s from Student s order by s.isuId", Student.class).getResultList();
+    }
+
     public Optional<Student> findByIsuId(int isuId) {
         return em.createQuery("select s from Student s where s.isuId = :isuId", Student.class)
                 .setParameter("isuId", isuId)
