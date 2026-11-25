@@ -17,10 +17,14 @@
         {/key}
     {/if}
     {#if $notice}
-        <p class="status" class:error={$notice.isError}>{$notice.text}</p>
+    <p class="notice-toast" class:error={$notice.isError}>
+        {$notice.text}
+    </p>
     {/if}
     {#if navigating.to}
+    <div class="navigation-loader">
         <Loader />
+    </div>
     {/if}
     {@render children()}
 </main>

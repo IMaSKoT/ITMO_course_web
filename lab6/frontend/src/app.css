@@ -561,3 +561,36 @@ td.actions button {
     width: 100%;
     margin: var(--space-lg) 0;
 }
+
+.notice-toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 100;
+    max-width: min(400px, calc(100vw - 40px));
+    padding: 12px 16px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.notice-toast.error {
+    background: #fdecea;
+    color: #c0392b;
+}
+
+.navigation-loader {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.navigation-loader .loader {
+    margin: 0;
+}
+
+html {
+    scrollbar-gutter: stable;
+}

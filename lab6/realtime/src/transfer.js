@@ -78,7 +78,7 @@ export function getImport(res, id) {
 
 export async function exportCsv(res, user) {
     const students = await backendRequest("/students/snapshot", user.token);
-    async function* lines() {
+    function* lines() {
         yield "\uFEFF" + csvLine(COLUMNS);
         for (const student of students) {
             yield csvLine(COLUMNS.map(column => student[column]));

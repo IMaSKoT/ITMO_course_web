@@ -75,7 +75,6 @@ export function connectRealtime(onstatus) {
     async function connect() {
         retryTimer = null;
         try {
-            await refreshSession();
             if (stopped) {
                 return;
             }

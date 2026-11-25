@@ -39,13 +39,13 @@ function publicDescription(description) {
 }
 
 export async function acceptOffer(req, res, user) {
-    if (clients.size >= MAX_CLIENTS) {
-        throw new HttpError(503, "Слишком много подключений уведомлений, попробуйте позже");
-    }
     const offer = parseJson(await readBody(req, 64 * 1024));
     if (offer?.type !== "offer" || typeof offer.sdp !== "string"
         || !offer.sdp.includes("m=application") || /m=(audio|video)/.test(offer.sdp)) {
         throw new HttpError(422, "Ожидается WebRTC offer для канала данных");
+    }
+    if (clients.size >= MAX_CLIENTS) {
+        throw new HttpError(503, "Слишком много подключений уведомлений, попробуйте позже");
     }
     const peer = new RTCPeerConnection({
         iceServers: [],

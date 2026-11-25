@@ -104,11 +104,15 @@
 </script>
 
 <h2>Импорт и экспорт студентов</h2>
-<p class="section-description">CSV в кодировке UTF-8, разделитель — запятая. До 2 МБ и 2000 студентов за один импорт.</p>
-<p class="section-description">Импорт добавляет новых студентов. Существующие ИСУ и повторы в файле отмечаются как конфликты; остальные строки продолжают обрабатываться.</p>
-<p class="section-description">Порядок столбцов:</p>
-<pre class="csv-columns">fullName,group,isuId,dormitory,room,settlementPeriod,isForeign,notes</pre>
-<p class="section-description">isForeign: true или false. Необязательные поля можно оставить пустыми. Поля с запятыми, кавычками или переносами строк заключаются в двойные кавычки, кавычка внутри удваивается.</p>
+<p class="section-description">
+    Загрузите CSV-файл в кодировке UTF-8, максимальный размер - 2 МБ, до 2000 студентов
+</p>
+<p class="section-description">
+    Студенты с существующим ИСУ пропускаются, остальные записи продолжают обрабатываться
+</p>
+<p class="section-description">
+    Формат файла соответствует формату экспорта
+</p>
 
 <ErrorBox {error} />
 <section class="transfer-section">

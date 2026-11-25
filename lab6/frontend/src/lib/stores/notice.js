@@ -1,6 +1,6 @@
 import {writable} from "svelte/store";
 
-const NOTICE_TIME = 4000;
+const NOTICE_TIME = 5000;
 
 export const notice = writable(null);
 
